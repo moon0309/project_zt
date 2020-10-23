@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>765</width>
+    <height>761</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QComboBox" name="cmb_port_name">
+        <item>
+         <property name="text">
+          <string>COM1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>COM2</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_open">
+        <property name="text">
+         <string>打开</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_close">
+        <property name="text">
+         <string>关闭</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButton1">
+        <property name="text">
+         <string>速度运行模式</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="radioButton2">
+        <property name="text">
+         <string>位置运行模式</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QRadioButton" name="radioButton6">
+        <property name="text">
+         <string>伺服关闭</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QRadioButton" name="radioButton4">
+        <property name="text">
+         <string>功放断电</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QRadioButton" name="radioButton3">
+        <property name="text">
+         <string>功放上电</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QRadioButton" name="radioButton5">
+        <property name="text">
+         <string>锁定</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLineEdit" name="data_edit1"/>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="data_edit2"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_send">
+        <property name="text">
+         <string>发送</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
