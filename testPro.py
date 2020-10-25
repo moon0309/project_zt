@@ -87,7 +87,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             pass
 
     ''' 功放、锁定、伺服选定时直接发送的数据 '''
-    def tr_data_send(self):
+    def str_data_send(self):
          num1 = 1
          num2 = num1.to_bytes(length=1, byteorder='big')
          num3 = QtCore.QByteArray(num2)
@@ -103,6 +103,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 print('<' + radiobutton.text() + '>被选中')
                 # 发送数据按钮
                 print('<' + radiobutton.text() + '>下的数据:')
+                self.btn_send.disconnect()
                 self.btn_send.clicked.connect(self.data_send)
             else:
                 pass
@@ -112,6 +113,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.data_edit1.setFocusPolicy(QtCore.Qt.NoFocus)
         self.data_edit2.setFocusPolicy(QtCore.Qt.NoFocus)
         print('不可用')
+        self.btn_send.disconnect()
         self.btn_send.clicked.connect(self.str_data_send)
 
 
