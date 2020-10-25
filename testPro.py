@@ -41,12 +41,12 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         # self.btn_send.clicked.connect(self.data_send)
 
         # self.radioButton1.setChecked(True)
-        self.radioButton1.toggled.connect(self.button_state)
-        self.radioButton2.toggled.connect(self.button_state)
-        self.radioButton3.toggled.connect(self.no_edit)
-        self.radioButton4.toggled.connect(self.no_edit)
-        self.radioButton5.toggled.connect(self.no_edit)
-        self.radioButton6.toggled.connect(self.no_edit)
+        self.radioButton1.toggled.connect(self.button_active)
+        self.radioButton2.toggled.connect(self.button_active)
+        self.radioButton3.toggled.connect(self.button_active_else)
+        self.radioButton4.toggled.connect(self.button_active_else)
+        self.radioButton5.toggled.connect(self.button_active_else)
+        self.radioButton6.toggled.connect(self.button_active_else)
 
         # self.timer_send = QTimer()
 
@@ -77,23 +77,42 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.btn_close.setEnabled(False)
 
     # 发送数据
-    def data_send(self, operate_type1):
+    def data_send(self):
         if self.ser.isOpen():
-            input_1 = bytes(self.data_edit1.text(), encoding='utf-8')
-            print(type(input_1))
-            input_2 = bytes(self.data_edit2.text(), encoding='utf-8')
-            input_s = input_1 + input_2
-            print(input_s)
-            if input_s != "":          # 非空字符串
-                data = QtCore.QByteArray(input_s)
-                self.ser.write(data)
+            if self.active_button == '速度运行模式':
+                input_speed_1 = hex(int(self.data_edit1.text()) * 100)
+                input_speed_2 = hex(int(self.data_edit2.text()) * 100)
+
+                input_speed_form = '55 AA 07 08 02 01 00 ' + str(input_speed_1)[2:] + '00 ' + \
+                                   str(input_speed_2)[2:] + ' 00 00 00 00 F0'
+                hex_command1 = bytes.fromhex(input_speed_form)
+                self.ser.write(hex_command1)
+            elif self.active_button == '位置运行模式':
+                input_speed_1 = hex(int(self.data_edit1.text()) * 100)
+                input_speed_2 = hex(int(self.data_edit2.text()) * 100)
+
+                input_speed_form = '55 AA 07 08 02 01 00 ' + str(input_speed_1)[2:] + '00 ' + \
+                                   str(input_speed_2)[2:] + ' 00 00 00 00 F0'
+                hex_command1 = bytes.fromhex(input_speed_form)
+                self.ser.write(hex_command1)
+
+
+                # input_1 = bytes(self.data_edit1.text(), encoding='utf-8')
+                # # a = ord(input_1)
+                # # print('这里')
+                # print(type(input_1))
+                # input_2 = bytes(self.data_edit2.text(), encoding='utf-8')
+                # input_s = input_1 + input_2
+                # print(input_s)
+                # if input_s != "":          # 非空字符串
+                #     data = QtCore.QByteArray(input_s)
+                #     self.ser.write(data)
         else:
             pass
 
     ''' 功放、锁定、伺服选定时直接发送的数据 '''
 
     def str_data_send(self):
-
         if self.active_button == '功放上电':
             hex_command = bytes.fromhex(self.POWER_ON)
             self.ser.write(hex_command)
@@ -109,7 +128,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 
 
     # 位置模式和速度模式按钮动作
-    def button_state(self):
+    def button_active(self):
         radiobutton = self.sender()
         if radiobutton.text() == '速度运行模式' or radiobutton.text() == '位置运行模式':
             self.active_button = radiobutton.text()
@@ -125,7 +144,8 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 pass
                 # print('<' + radiobutton.text() + '>取消选中')
 
-    def no_edit(self):
+    # 功放、伺服关闭、断电按钮动作
+    def button_active_else(self):
         radiobutton = self.sender()
         if radiobutton.text() == '功放上电' or radiobutton.text() == '功放断电' or radiobutton.text() == '锁定' or radiobutton.text() == '伺服关闭':
             self.active_button = radiobutton.text()
