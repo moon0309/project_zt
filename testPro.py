@@ -1,5 +1,5 @@
 import sys
-from Pro import  Ui_MainWindow
+from Pro import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import serial
 import serial.tools.list_ports
@@ -25,6 +25,11 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("转台上位机")
         self.ser = serial.Serial()
         # self.port_check()
+        self.active_button = ''
+        self.POWER_ON = '55 AA 07 08 40 01 00 00 00 00 00 00 00 00 F0'
+        self.POWER_OFF = '55 AA 07 08 80 01 00 00 00 00 00 00 00 00 F0'
+        self.LOCK = '55 AA 07 08 10 01 00 00 00 00 00 00 00 00 F0'
+        self.SERVO_OFF = '55 AA 07 08 01 01 00 00 00 00 00 00 00 00 F0'
 
     def init(self):
 
@@ -34,7 +39,6 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.btn_close.clicked.connect(self.port_close)
         # 发送数据按钮
         # self.btn_send.clicked.connect(self.data_send)
-
 
         # self.radioButton1.setChecked(True)
         self.radioButton1.toggled.connect(self.button_state)
@@ -73,7 +77,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.btn_close.setEnabled(False)
 
     # 发送数据
-    def data_send(self):
+    def data_send(self, operate_type1):
         if self.ser.isOpen():
             input_1 = bytes(self.data_edit1.text(), encoding='utf-8')
             print(type(input_1))
@@ -87,16 +91,28 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             pass
 
     ''' 功放、锁定、伺服选定时直接发送的数据 '''
+
     def str_data_send(self):
-         num1 = 1
-         num2 = num1.to_bytes(length=1, byteorder='big')
-         num3 = QtCore.QByteArray(num2)
-         self.ser.write(num3)
+
+        if self.active_button == '功放上电':
+            hex_command = bytes.fromhex(self.POWER_ON)
+            self.ser.write(hex_command)
+        elif self.active_button == '功放断电':
+            hex_command = bytes.fromhex(self.POWER_OFF)
+            self.ser.write(hex_command)
+        elif self.active_button == '锁定':
+            hex_command = bytes.fromhex(self.LOCK)
+            self.ser.write(hex_command)
+        elif self.active_button == '伺服关闭':
+            hex_command = bytes.fromhex(self.SERVO_OFF)
+            self.ser.write(hex_command)
+
 
     # 位置模式和速度模式按钮动作
     def button_state(self):
         radiobutton = self.sender()
-        if radiobutton.text() == '速度运行模式' or radiobutton.text() == '位置运行模式' :
+        if radiobutton.text() == '速度运行模式' or radiobutton.text() == '位置运行模式':
+            self.active_button = radiobutton.text()
             self.data_edit1.setFocusPolicy(QtCore.Qt.StrongFocus)
             self.data_edit2.setFocusPolicy(QtCore.Qt.StrongFocus)
             if radiobutton.isChecked() == True:
@@ -110,11 +126,24 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 # print('<' + radiobutton.text() + '>取消选中')
 
     def no_edit(self):
-        self.data_edit1.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.data_edit2.setFocusPolicy(QtCore.Qt.NoFocus)
-        print('不可用')
-        self.btn_send.disconnect()
-        self.btn_send.clicked.connect(self.str_data_send)
+        radiobutton = self.sender()
+        if radiobutton.text() == '功放上电' or radiobutton.text() == '功放断电' or radiobutton.text() == '锁定' or radiobutton.text() == '伺服关闭':
+            self.active_button = radiobutton.text()
+            self.data_edit1.setFocusPolicy(QtCore.Qt.StrongFocus)
+            self.data_edit2.setFocusPolicy(QtCore.Qt.StrongFocus)
+            if radiobutton.isChecked() == True:
+                print('<' + radiobutton.text() + '>被选中')
+                # 发送数据按钮
+                print('<' + radiobutton.text() + '>下的数据:')
+                self.btn_send.disconnect()
+                self.btn_send.clicked.connect(self.str_data_send)
+            else:
+                pass
+        # self.data_edit1.setFocusPolicy(QtCore.Qt.NoFocus)
+        # self.data_edit2.setFocusPolicy(QtCore.Qt.NoFocus)
+        # print('不可用')
+        # self.btn_send.disconnect()
+        # self.btn_send.clicked.connect(self.str_data_send)
 
 
 if __name__ == '__main__':
@@ -122,11 +151,6 @@ if __name__ == '__main__':
     myshow = Pyqt5Serial()
     myshow.show()
     sys.exit(app.exec_())
-
-
-
-
-
 
 # if __name__ == '__main__':
 #     app = QApplication(sys.argv)
@@ -137,25 +161,20 @@ if __name__ == '__main__':
 #     sys.exit(app.exec_())
 
 
-
-    # def button_state(self):
-    #     radiobutton = self.sender()
-    #     if  radiobutton.text() =='速度运行模式':
-    #         if radiobutton.isChecked() == True:
-    #             print('<' + radiobutton.text() + '>被选中')
-    #             # 发送数据按钮
-    #             print('等待发送速度运行模式下的数据:' )
-    #             self.btn_send.clicked.connect(self.data_send)
-    #         else:
-    #             print('<' + radiobutton.text() + '>取消选中')
-    #     if radiobutton.text() == '位置运行模式':
-    #         if radiobutton.isChecked() == True:
-    #             print('<' + radiobutton.text() + '>被选中')
-    #             print('等待发送位置运行模式下的数据:')
-    #             self.btn_send.clicked.connect(self.data_send)
-    #         else:
-    #             print('<' + radiobutton.text() + '>取消选中')
-
-
-
-
+# def button_state(self):
+#     radiobutton = self.sender()
+#     if  radiobutton.text() =='速度运行模式':
+#         if radiobutton.isChecked() == True:
+#             print('<' + radiobutton.text() + '>被选中')
+#             # 发送数据按钮
+#             print('等待发送速度运行模式下的数据:' )
+#             self.btn_send.clicked.connect(self.data_send)
+#         else:
+#             print('<' + radiobutton.text() + '>取消选中')
+#     if radiobutton.text() == '位置运行模式':
+#         if radiobutton.isChecked() == True:
+#             print('<' + radiobutton.text() + '>被选中')
+#             print('等待发送位置运行模式下的数据:')
+#             self.btn_send.clicked.connect(self.data_send)
+#         else:
+#             print('<' + radiobutton.text() + '>取消选中')
