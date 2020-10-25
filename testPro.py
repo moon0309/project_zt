@@ -30,17 +30,19 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 
         # 打开串口按钮
         self.btn_open.clicked.connect(self.port_open)
-
         # 关闭串口按钮
         self.btn_close.clicked.connect(self.port_close)
-
         # 发送数据按钮
-        self.btn_send.clicked.connect(self.data_send)
+        # self.btn_send.clicked.connect(self.data_send)
 
 
-        self.radioButton1.setChecked(True)
-        self.radioButton1.toggled.connect(self.buttonState)
-        self.radioButton2.toggled.connect(self.buttonState)
+        # self.radioButton1.setChecked(True)
+        self.radioButton1.toggled.connect(self.button_state)
+        self.radioButton2.toggled.connect(self.button_state)
+        self.radioButton3.toggled.connect(self.no_edit)
+        self.radioButton4.toggled.connect(self.no_edit)
+        self.radioButton5.toggled.connect(self.no_edit)
+        self.radioButton6.toggled.connect(self.no_edit)
 
         # self.timer_send = QTimer()
 
@@ -73,31 +75,44 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
     # 发送数据
     def data_send(self):
         if self.ser.isOpen():
-            print("OK")
             input_1 = bytes(self.data_edit1.text(), encoding='utf-8')
+            print(type(input_1))
             input_2 = bytes(self.data_edit2.text(), encoding='utf-8')
             input_s = input_1 + input_2
             print(input_s)
-            if input_s != "":
-                # 非空字符串
+            if input_s != "":          # 非空字符串
                 data = QtCore.QByteArray(input_s)
                 self.ser.write(data)
         else:
             pass
 
-    def buttonState(self):
-        radioButton = self.sender()
-        if  radioButton.text() =='速度运行模式':
-            if radioButton.isChecked() == True:
-                print('<' + radioButton.text() + '>被选中')
-            else:
-                print('<' + radioButton.text() + '>取消选中')
-        if radioButton.text() == '位置运行模式':
-            if radioButton.isChecked() == True:
-                print('<' + radioButton.text() + '>被选中')
-            else:
-                print('<' + radioButton.text() + '>取消选中')
+    ''' 功放、锁定、伺服选定时直接发送的数据 '''
+    def tr_data_send(self):
+         num1 = 1
+         num2 = num1.to_bytes(length=1, byteorder='big')
+         num3 = QtCore.QByteArray(num2)
+         self.ser.write(num3)
 
+    # 位置模式和速度模式按钮动作
+    def button_state(self):
+        radiobutton = self.sender()
+        if radiobutton.text() == '速度运行模式' or radiobutton.text() == '位置运行模式' :
+            self.data_edit1.setFocusPolicy(QtCore.Qt.StrongFocus)
+            self.data_edit2.setFocusPolicy(QtCore.Qt.StrongFocus)
+            if radiobutton.isChecked() == True:
+                print('<' + radiobutton.text() + '>被选中')
+                # 发送数据按钮
+                print('<' + radiobutton.text() + '>下的数据:')
+                self.btn_send.clicked.connect(self.data_send)
+            else:
+                pass
+                # print('<' + radiobutton.text() + '>取消选中')
+
+    def no_edit(self):
+        self.data_edit1.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.data_edit2.setFocusPolicy(QtCore.Qt.NoFocus)
+        print('不可用')
+        self.btn_send.clicked.connect(self.str_data_send)
 
 
 if __name__ == '__main__':
@@ -118,3 +133,27 @@ if __name__ == '__main__':
 #     ui.setupUi(mainWindow)
 #     mainWindow.show()
 #     sys.exit(app.exec_())
+
+
+
+    # def button_state(self):
+    #     radiobutton = self.sender()
+    #     if  radiobutton.text() =='速度运行模式':
+    #         if radiobutton.isChecked() == True:
+    #             print('<' + radiobutton.text() + '>被选中')
+    #             # 发送数据按钮
+    #             print('等待发送速度运行模式下的数据:' )
+    #             self.btn_send.clicked.connect(self.data_send)
+    #         else:
+    #             print('<' + radiobutton.text() + '>取消选中')
+    #     if radiobutton.text() == '位置运行模式':
+    #         if radiobutton.isChecked() == True:
+    #             print('<' + radiobutton.text() + '>被选中')
+    #             print('等待发送位置运行模式下的数据:')
+    #             self.btn_send.clicked.connect(self.data_send)
+    #         else:
+    #             print('<' + radiobutton.text() + '>取消选中')
+
+
+
+

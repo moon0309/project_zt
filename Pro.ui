@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>765</width>
-    <height>761</height>
+    <width>1071</width>
+    <height>769</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -115,5 +115,198 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>radioButton2</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>242</x>
+     <y>371</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>145</x>
+     <y>593</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton2</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit2</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>371</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>416</x>
+     <y>593</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton1</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>113</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>105</x>
+     <y>594</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton1</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit2</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>118</x>
+     <y>370</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>525</x>
+     <y>595</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton3</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>366</x>
+     <y>362</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>192</x>
+     <y>593</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton3</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit2</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>381</x>
+     <y>373</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>614</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton4</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>488</x>
+     <y>358</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>264</x>
+     <y>597</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton4</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit2</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>525</x>
+     <y>364</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>552</x>
+     <y>594</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton5</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>598</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>297</x>
+     <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton5</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit2</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>632</x>
+     <y>366</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>578</x>
+     <y>595</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton6</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>693</x>
+     <y>362</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>215</x>
+     <y>596</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton6</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit2</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>736</x>
+     <y>370</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>483</x>
+     <y>614</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

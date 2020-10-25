@@ -69,6 +69,18 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.radioButton2.clicked.connect(self.data_edit1.clear)
+        self.radioButton2.clicked.connect(self.data_edit2.clear)
+        self.radioButton1.clicked.connect(self.data_edit1.clear)
+        self.radioButton1.clicked.connect(self.data_edit2.clear)
+        self.radioButton3.clicked.connect(self.data_edit1.clear)
+        self.radioButton3.clicked.connect(self.data_edit2.clear)
+        self.radioButton4.clicked.connect(self.data_edit1.clear)
+        self.radioButton4.clicked.connect(self.data_edit2.clear)
+        self.radioButton5.clicked.connect(self.data_edit1.clear)
+        self.radioButton5.clicked.connect(self.data_edit2.clear)
+        self.radioButton6.clicked.connect(self.data_edit1.clear)
+        self.radioButton6.clicked.connect(self.data_edit2.clear)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
