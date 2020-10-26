@@ -2,6 +2,7 @@ import sys
 from Pro import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import serial
+import struct
 import serial.tools.list_ports
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QTimer
@@ -25,6 +26,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("转台上位机")
         self.ser = serial.Serial()
         # self.port_check()
+
         self.active_button = ''
         self.POWER_ON = '55 AA 07 08 40 01 00 00 00 00 00 00 00 00 F0'
         self.POWER_OFF = '55 AA 07 08 80 01 00 00 00 00 00 00 00 00 F0'
@@ -80,16 +82,22 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
     def data_send(self):
         if self.ser.isOpen():
             if self.active_button == '速度运行模式':
-                input_speed_1 = hex(int(self.data_edit1.text()) * 100)
-                input_speed_2 = hex(int(self.data_edit2.text()) * 100)
+                input_speed_1 = hex(round(float(self.data_edit1.text()) * 100))
+                input_speed_2 = hex(round(float(self.data_edit2.text()) * 100))
 
                 input_speed_form = '55 AA 07 08 02 01 00 ' + str(input_speed_1)[2:] + '00 ' + \
                                    str(input_speed_2)[2:] + ' 00 00 00 00 F0'
                 hex_command1 = bytes.fromhex(input_speed_form)
                 self.ser.write(hex_command1)
             elif self.active_button == '位置运行模式':
-                input_speed_1 = hex(int(self.data_edit1.text()) * 100)
-                input_speed_2 = hex(int(self.data_edit2.text()) * 100)
+                # 浮点数转16进制  struct.pack("<f", 238.3).encode('hex')
+                # input_speed_1 = hex(round(float(self.data_edit1.text()) * 65536 / 360))
+                # input_speed_2 = hex(round(float(self.data_edit2.text()) * 65536 / 360))
+
+                a = float(self.data_edit2.text()) * 65536 / 360
+                print(type(a))
+                input_speed_1 = struct.pack("<f", float(self.data_edit1.text()) * 65536 / 360).hex()
+                input_speed_2 = struct.pack("<f", float(self.data_edit2.text()) * 65536 / 360).hex()
 
                 input_speed_form = '55 AA 07 08 02 01 00 ' + str(input_speed_1)[2:] + '00 ' + \
                                    str(input_speed_2)[2:] + ' 00 00 00 00 F0'
@@ -132,8 +140,10 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         radiobutton = self.sender()
         if radiobutton.text() == '速度运行模式' or radiobutton.text() == '位置运行模式':
             self.active_button = radiobutton.text()
-            self.data_edit1.setFocusPolicy(QtCore.Qt.StrongFocus)
-            self.data_edit2.setFocusPolicy(QtCore.Qt.StrongFocus)
+            self.data_edit1.setEnabled(True)
+            self.data_edit2.setEnabled(True)
+            # self.data_edit1.setFocusPolicy(QtCore.Qt.StrongFocus)
+            # self.data_edit2.setFocusPolicy(QtCore.Qt.StrongFocus)
             if radiobutton.isChecked() == True:
                 print('<' + radiobutton.text() + '>被选中')
                 # 发送数据按钮
@@ -149,8 +159,10 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         radiobutton = self.sender()
         if radiobutton.text() == '功放上电' or radiobutton.text() == '功放断电' or radiobutton.text() == '锁定' or radiobutton.text() == '伺服关闭':
             self.active_button = radiobutton.text()
-            self.data_edit1.setFocusPolicy(QtCore.Qt.StrongFocus)
-            self.data_edit2.setFocusPolicy(QtCore.Qt.StrongFocus)
+            self.data_edit1.setEnabled(False)
+            self.data_edit2.setEnabled(False)
+            # self.data_edit1.setFocusPolicy(QtCore.Qt.NoFocus)
+            # self.data_edit2.setFocusPolicy(QtCore.Qt.NoFocus)
             if radiobutton.isChecked() == True:
                 print('<' + radiobutton.text() + '>被选中')
                 # 发送数据按钮
