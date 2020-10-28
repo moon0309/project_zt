@@ -6,105 +6,363 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1071</width>
-    <height>769</height>
+    <width>1103</width>
+    <height>752</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QComboBox" name="cmb_port_name">
-        <item>
-         <property name="text">
-          <string>COM1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>COM2</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_open">
-        <property name="text">
-         <string>打开</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_close">
-        <property name="text">
-         <string>关闭</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QComboBox" name="cmb_port_name">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <item>
+            <property name="text">
+             <string>COM1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>COM2</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_open">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>打开</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_close">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>关闭</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QRadioButton" name="radioButton1">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>速度运行模式</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>位置运行模式</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>功放上电</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>功放断电</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton5">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>锁定</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton6">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>伺服关闭</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </item>
-    <item>
+    <item row="1" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton1">
-        <property name="text">
-         <string>速度运行模式</string>
+      <item row="1" column="2">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="1" colspan="3">
+       <widget class="QTextEdit" name="show_send">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton2">
-        <property name="text">
-         <string>位置运行模式</string>
+      <item row="3" column="1" colspan="3">
+       <widget class="QTextEdit" name="show_receive">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
         </property>
        </widget>
       </item>
-      <item row="0" column="5">
-       <widget class="QRadioButton" name="radioButton6">
-        <property name="text">
-         <string>伺服关闭</string>
+      <item row="0" column="2" colspan="2">
+       <widget class="QLineEdit" name="data_edit2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QRadioButton" name="radioButton4">
-        <property name="text">
-         <string>功放断电</string>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLineEdit" name="data_edit1">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QRadioButton" name="radioButton3">
-        <property name="text">
-         <string>功放上电</string>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
         </property>
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QRadioButton" name="radioButton5">
+       <widget class="QPushButton" name="btn_send">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
         <property name="text">
-         <string>锁定</string>
+         <string>发送</string>
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QLineEdit" name="data_edit1"/>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="data_edit2"/>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_send">
+      <item row="2" column="0">
+       <widget class="QLabel" name="ready_send">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
         <property name="text">
-         <string>发送</string>
+         <string>       已发送：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="ready_received">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>       已接受：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QPushButton" name="clear_send">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>清空发送区</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QPushButton" name="clear_receive">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>清空接收区</string>
         </property>
        </widget>
       </item>
@@ -123,12 +381,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>242</x>
-     <y>371</y>
+     <x>390</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>593</y>
+     <x>159</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -139,12 +397,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>276</x>
-     <y>371</y>
+     <x>390</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>416</x>
-     <y>593</y>
+     <x>864</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -155,12 +413,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>363</y>
+     <x>141</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>105</x>
-     <y>594</y>
+     <x>119</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -171,12 +429,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>370</y>
+     <x>146</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>525</x>
-     <y>595</y>
+     <x>871</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -187,12 +445,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>366</x>
-     <y>362</y>
+     <x>561</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>192</x>
-     <y>593</y>
+     <x>206</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -203,12 +461,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>381</x>
-     <y>373</y>
+     <x>561</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>454</x>
-     <y>614</y>
+     <x>871</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -219,12 +477,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>488</x>
-     <y>358</y>
+     <x>732</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>264</x>
-     <y>597</y>
+     <x>278</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -235,12 +493,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>525</x>
-     <y>364</y>
+     <x>732</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>552</x>
-     <y>594</y>
+     <x>871</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -251,12 +509,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>598</x>
-     <y>369</y>
+     <x>903</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>297</x>
-     <y>592</y>
+     <x>311</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -267,12 +525,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>632</x>
-     <y>366</y>
+     <x>903</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>578</x>
-     <y>595</y>
+     <x>871</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -283,12 +541,12 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>693</x>
-     <y>362</y>
+     <x>1074</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>215</x>
-     <y>596</y>
+     <x>229</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -299,12 +557,44 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>736</x>
-     <y>370</y>
+     <x>1074</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>483</x>
-     <y>614</y>
+     <x>871</x>
+     <y>257</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clear_send</sender>
+   <signal>clicked()</signal>
+   <receiver>show_send</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>918</x>
+     <y>416</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>855</x>
+     <y>417</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clear_receive</sender>
+   <signal>clicked()</signal>
+   <receiver>show_receive</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>891</x>
+     <y>605</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>855</x>
+     <y>610</y>
     </hint>
    </hints>
   </connection>

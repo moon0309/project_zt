@@ -86,15 +86,10 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 input_speed_b = hex(round(float(self.data_edit2.text()) * 100))
                 input_speed_1 = str(input_speed_a)[2:].zfill(4)
                 input_speed_2 = str(input_speed_b)[2:].zfill(4)
-                print(input_speed_a)
-                print(input_speed_1)
-                print(hex(111))
-                print(input_speed_1[0:2])
-                print(input_speed_1[2:])
-                input_speed_form = '55 AA 07 08 02 01 00 ' + str(input_speed_1)[2:] + '00 ' + \
-                                   str(input_speed_2)[2:] + ' 00 00 00 00 F0'
+                input_speed_form = '55 AA 07 08 02 01 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 00 F0'
                 hex_command1 = bytes.fromhex(input_speed_form)
                 self.ser.write(hex_command1)
+                self.show_send.append(input_speed_form)
             elif self.active_button == '位置运行模式':
                 # 浮点数转16进制  struct.pack("<f", 238.3).encode('hex')
                 # input_speed_1 = hex(round(float(self.data_edit1.text()) * 65536 / 360))
@@ -106,46 +101,43 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 input_speed_b = struct.pack("<f", float(self.data_edit2.text()) * 65536 / 360).hex()
                 input_speed_1 = str(input_speed_a)[2:].zfill(4)
                 input_speed_2 = str(input_speed_b)[2:].zfill(4)
-                print(input_speed_a)
-                print(input_speed_1)
-                print(hex(111))
-                print(input_speed_1[0:2])
-                print(input_speed_1[2:])
-                input_speed_form = '55 AA 07 08 02 01  ' + input_speed_1[0:2] + input_speed_1[2:] \
-                                   + input_speed_2[0:2] + input_speed_2[2:] + ' 00 00 00 00 F0'
+                input_speed_form = '55 AA 07 08 02 01  ' + input_speed_1[0:2] + ' ' + input_speed_1[2:] + ' ' + input_speed_2[0:2] + ' ' + input_speed_2[2:] + ' 00 00 00 00 F0'
                 hex_command1 = bytes.fromhex(input_speed_form)
                 print(type(hex_command1))
                 self.ser.write(hex_command1)
+                self.show_send.append(input_speed_form)
 
-
-                # input_1 = bytes(self.data_edit1.text(), encoding='utf-8')
-                # # a = ord(input_1)
-                # # print('这里')
-                # print(type(input_1))
-                # input_2 = bytes(self.data_edit2.text(), encoding='utf-8')
-                # input_s = input_1 + input_2
-                # print(input_s)
-                # if input_s != "":          # 非空字符串
-                #     data = QtCore.QByteArray(input_s)
-                #     self.ser.write(data)
         else:
             pass
 
-    ''' 功放、锁定、伺服选定时直接发送的数据 '''
+    # # 已发送区显示发送内容
+    # def text_show(self):
+    #     self.show_send.setText()
 
+
+
+    ''' 功放、锁定、伺服选定时直接发送的数据 '''
     def str_data_send(self):
         if self.active_button == '功放上电':
             hex_command = bytes.fromhex(self.POWER_ON)
             self.ser.write(hex_command)
+            self.show_send.append(self.POWER_ON)
         elif self.active_button == '功放断电':
             hex_command = bytes.fromhex(self.POWER_OFF)
             self.ser.write(hex_command)
+            self.show_send.append(self.POWER_OFF)
         elif self.active_button == '锁定':
             hex_command = bytes.fromhex(self.LOCK)
             self.ser.write(hex_command)
+            self.show_send.append(self.LOCK)
         elif self.active_button == '伺服关闭':
             hex_command = bytes.fromhex(self.SERVO_OFF)
             self.ser.write(hex_command)
+            self.show_send.append(self.SERVO_OFF)
+
+        # # 接收数据
+        # def data_receive(self):
+        #     data = self.ser.
 
 
     # 位置模式和速度模式按钮动作
