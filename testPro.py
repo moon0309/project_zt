@@ -82,9 +82,15 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
     def data_send(self):
         if self.ser.isOpen():
             if self.active_button == '速度运行模式':
-                input_speed_1 = hex(round(float(self.data_edit1.text()) * 100))
-                input_speed_2 = hex(round(float(self.data_edit2.text()) * 100))
-
+                input_speed_a = hex(round(float(self.data_edit1.text()) * 100))
+                input_speed_b = hex(round(float(self.data_edit2.text()) * 100))
+                input_speed_1 = str(input_speed_a)[2:].zfill(4)
+                input_speed_2 = str(input_speed_b)[2:].zfill(4)
+                print(input_speed_a)
+                print(input_speed_1)
+                print(hex(111))
+                print(input_speed_1[0:2])
+                print(input_speed_1[2:])
                 input_speed_form = '55 AA 07 08 02 01 00 ' + str(input_speed_1)[2:] + '00 ' + \
                                    str(input_speed_2)[2:] + ' 00 00 00 00 F0'
                 hex_command1 = bytes.fromhex(input_speed_form)
@@ -96,12 +102,19 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 
                 a = float(self.data_edit2.text()) * 65536 / 360
                 print(type(a))
-                input_speed_1 = struct.pack("<f", float(self.data_edit1.text()) * 65536 / 360).hex()
-                input_speed_2 = struct.pack("<f", float(self.data_edit2.text()) * 65536 / 360).hex()
-
-                input_speed_form = '55 AA 07 08 02 01 00 ' + str(input_speed_1)[2:] + '00 ' + \
-                                   str(input_speed_2)[2:] + ' 00 00 00 00 F0'
+                input_speed_a = struct.pack("<f", float(self.data_edit1.text()) * 65536 / 360).hex()
+                input_speed_b = struct.pack("<f", float(self.data_edit2.text()) * 65536 / 360).hex()
+                input_speed_1 = str(input_speed_a)[2:].zfill(4)
+                input_speed_2 = str(input_speed_b)[2:].zfill(4)
+                print(input_speed_a)
+                print(input_speed_1)
+                print(hex(111))
+                print(input_speed_1[0:2])
+                print(input_speed_1[2:])
+                input_speed_form = '55 AA 07 08 02 01  ' + input_speed_1[0:2] + input_speed_1[2:] \
+                                   + input_speed_2[0:2] + input_speed_2[2:] + ' 00 00 00 00 F0'
                 hex_command1 = bytes.fromhex(input_speed_form)
+                print(type(hex_command1))
                 self.ser.write(hex_command1)
 
 
