@@ -39,7 +39,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <item>
@@ -64,7 +64,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -82,7 +82,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -104,11 +104,23 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
             <string>速度运行模式</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_w">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>稳定运行模式</string>
            </property>
           </widget>
          </item>
@@ -122,7 +134,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -140,7 +152,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -158,7 +170,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -176,29 +188,11 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
             <string>锁定</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButton6">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>伺服关闭</string>
            </property>
           </widget>
          </item>
@@ -295,7 +289,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
@@ -313,7 +307,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="layoutDirection">
@@ -328,7 +322,7 @@
        <widget class="QLabel" name="ready_received">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
@@ -344,9 +338,15 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>208</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
@@ -358,7 +358,7 @@
        <widget class="QPushButton" name="clear_receive">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
@@ -535,38 +535,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>radioButton6</sender>
-   <signal>clicked()</signal>
-   <receiver>data_edit1</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1074</x>
-     <y>197</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>229</x>
-     <y>257</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton6</sender>
-   <signal>clicked()</signal>
-   <receiver>data_edit2</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1074</x>
-     <y>197</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>871</x>
-     <y>257</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>clear_send</sender>
    <signal>clicked()</signal>
    <receiver>show_send</receiver>
@@ -595,6 +563,38 @@
     <hint type="destinationlabel">
      <x>855</x>
      <y>610</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_w</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>264</x>
+     <y>157</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>259</x>
+     <y>227</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_w</sender>
+   <signal>clicked()</signal>
+   <receiver>data_edit2</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>279</x>
+     <y>155</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>549</x>
+     <y>227</y>
     </hint>
    </hints>
   </connection>
