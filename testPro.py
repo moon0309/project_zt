@@ -1,20 +1,17 @@
 import sys
 from Pro import Ui_MainWindow
-from PyQt5.QtWidgets import QApplication, QMainWindow
 import serial
-import struct
 import serial.tools.list_ports
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtCore import QTimer
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
+from PyQt5.QtCore import QTimer
+
 
 ''' 
 参考博客
 https://www.cnblogs.com/ubuntu1987/archive/2004/01/13/12191633.html
 https://www.pythonf.cn/read/108311
+https://blog.csdn.net/liuxf196921/article/details/88165399
+https://www.jianshu.com/p/d4c0169a28db
 '''
 
 
@@ -50,6 +47,10 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.radioButton4.toggled.connect(self.button_active_else)
         self.radioButton5.toggled.connect(self.button_active_else)
         self.radioButton6.toggled.connect(self.button_active_else)
+        self.btn_open.clicked.connect(self.data_receive)
+        # 定时器接收数据
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.data_receive)
 
         # self.timer_send = QTimer()
 
@@ -66,6 +67,9 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Port Error", "此串口不能被打开！")
             return None
 
+        # 打开串口接收定时器，周期为2ms
+        self.timer.start(2)
+
         if self.ser.isOpen():
             self.btn_open.setEnabled(False)
             self.btn_close.setEnabled(True)
@@ -79,23 +83,18 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.btn_open.setEnabled(True)
         self.btn_close.setEnabled(False)
 
-    # def tohex(val, nbits):
-    #     return ((val + (1 << nbits)) % (1 << nbits))
-
+    # 显示收发数据
+    def dispContent(self, argvStr):
+        pass
 
 
     # 发送数据
     def data_send(self):
         if self.ser.isOpen():
             if self.active_button == '速度运行模式':
-                # print('aaaaaaaaaaaaaaaaaaaaaaaa')
-                # print(float(self.data_edit1.text()))
                 input_speed_initial1 = round(float(self.data_edit1.text()) * 100)
-                # input_speed_a = hex(round(float(self.data_edit1.text()) * 100))
-                # print(input_speed_initial1)
-                # print(type(input_speed_initial1))
                 input_speed_initial2 = round(float(self.data_edit2.text()) * 100)
-                # input_speed_b = hex(round(float(self.data_edit2.text()) * 100))
+
                 if input_speed_initial1 >= 0 and input_speed_initial2 >= 0:
                     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
                     input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
@@ -104,7 +103,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                     self.ser.write(hex_command1)
                     self.show_send.append(input_speed_form)
                 elif input_speed_initial1 < 0 and input_speed_initial2 < 0:
-                    # input_speed_abs1 = int(hex(32768 - abs(input_speed_initial1))) + 0x8000
+
                     input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
                     input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
                     input_speed_form = '55 AA 07 08 03 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 00 F0'
@@ -128,11 +127,8 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 
 
             elif self.active_button == '位置运行模式':
-                # 浮点数转16进制  hex(round
-                # input_speed_a = struct.pack("<f", float(self.data_edit1.text()) * 65536 / 360).hex()
                 input_speed_initial1 = round(float(self.data_edit1.text()) * 65536 / 360)
                 print(input_speed_initial1)
-                # input_speed_b = struct.pack("<f", float(self.data_edit2.text()) * 65536 / 360).hex()
                 input_speed_initial2 = round(float(self.data_edit2.text()) * 65536 / 360)
                 if input_speed_initial1 >= 0 and input_speed_initial2 >= 0:
                     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
@@ -166,10 +162,8 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                     self.show_send.append(input_speed_form)
 
             elif self.active_button == '稳定运行模式':
-                # 浮点数转16进制  hex(round
-                # input_speed_a = struct.pack("<f", float(self.data_edit1.text()) * 65536 / 360).hex()
+
                 input_speed_initial1 = round(float(self.data_edit1.text()) * 100)
-                # input_speed_b = struct.pack("<f", float(self.data_edit2.text()) * 65536 / 360).hex()
                 input_speed_initial2 = round(float(self.data_edit2.text()) * 100)
                 if input_speed_initial1 >= 0 and input_speed_initial2 >= 0:
                     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
@@ -204,9 +198,34 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         else:
             pass
 
-    # # 已发送区显示发送内容
-    # def text_show(self):
-    #     self.show_send.setText()
+    #接收数据
+    def data_receive(self):
+        try:
+            count = self.ser.inWaiting()
+        except:
+            self.port_close()
+            return None
+        if count != 0:
+            dealStr = ''
+            # 读串口数据
+            recv = self.ser.read(count)
+            # 在这里将接收到数据进行区分：hex 或 字符串
+            # hex 格式：\xYY\xYY\xYY，如果接收到的字符是这种格式，则说明是hex字符，我们需要将
+            # \x去除掉，取出YY，然后组成字符串返回
+            # 如果接收到的是字符串，则使用decode进行解码
+            print("接收到的数据 %s \n类型为: %s\n" % (recv, type(recv)))
+            try:
+                dealStr = recv.decode()
+            except (TypeError, UnicodeDecodeError):
+                for i in range(len(recv)):
+                    # print(hex(recv[i])[2:])
+                    dealStr += hex(recv[i])[2:]
+                    dealStr += ' '
+            print("处理后的数据 %s \n类型为: %s\n" % (dealStr, type(dealStr)))
+
+            # 显示接收到的数据
+            self.show_receive.append(dealStr)
+
 
 
 
@@ -229,9 +248,6 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             self.ser.write(hex_command)
             self.show_send.append(self.READ_DATA)
 
-        # # 接收数据
-        # def data_receive(self):
-        #     data = self.ser.
 
 
     # 位置模式和速度模式按钮动作
@@ -241,8 +257,6 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             self.active_button = radiobutton.text()
             self.data_edit1.setEnabled(True)
             self.data_edit2.setEnabled(True)
-            # self.data_edit1.setFocusPolicy(QtCore.Qt.StrongFocus)
-            # self.data_edit2.setFocusPolicy(QtCore.Qt.StrongFocus)
             if radiobutton.isChecked() == True:
                 print('<' + radiobutton.text() + '>被选中')
                 # 发送数据按钮
@@ -251,7 +265,6 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 self.btn_send.clicked.connect(self.data_send)
             else:
                 pass
-                # print('<' + radiobutton.text() + '>取消选中')
 
     # 功放、伺服关闭、断电按钮动作
     def button_active_else(self):
@@ -260,8 +273,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             self.active_button = radiobutton.text()
             self.data_edit1.setEnabled(False)
             self.data_edit2.setEnabled(False)
-            # self.data_edit1.setFocusPolicy(QtCore.Qt.NoFocus)
-            # self.data_edit2.setFocusPolicy(QtCore.Qt.NoFocus)
+
             if radiobutton.isChecked() == True:
                 print('<' + radiobutton.text() + '>被选中')
                 # 发送数据按钮
@@ -270,11 +282,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 self.btn_send.clicked.connect(self.str_data_send)
             else:
                 pass
-        # self.data_edit1.setFocusPolicy(QtCore.Qt.NoFocus)
-        # self.data_edit2.setFocusPolicy(QtCore.Qt.NoFocus)
-        # print('不可用')
-        # self.btn_send.disconnect()
-        # self.btn_send.clicked.connect(self.str_data_send)
+
 
 
 if __name__ == '__main__':
