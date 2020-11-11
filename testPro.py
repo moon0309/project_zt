@@ -2,8 +2,9 @@ import sys
 from Pro import Ui_MainWindow
 import serial
 import serial.tools.list_ports
-from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import *
+from functoin_file import data_send_sudu
 
 
 ''' 
@@ -22,14 +23,14 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.init()
         self.setWindowTitle("转台上位机")
         self.ser = serial.Serial()
-        # self.port_check()
 
         self.active_button = ''
-        self.POWER_ON = '55 AA 07 08 80 00 00 00 00 00 00 00 00 00 F0'
-        self.POWER_OFF = '55 AA 07 08 00 00 00 00 00 00 00 00 00 00 F0'
-        self.LOCK = '55 AA 07 08 10 00 00 00 00 00 00 00 00 00 F0'
-        self.READ_DATA = '55 AA 07 08 00 FF 00 00 00 00 00 00 00 00 F0'
+        self.POWER_ON = '55 AA 07 08 80 00 00 00 00 00 00 00 00 F0'
+        self.POWER_OFF = '55 AA 07 08 00 00 00 00 00 00 00 00 00 F0'
+        self.LOCK = '55 AA 07 08 10 00 00 00 00 00 00 00 00 F0'
+        self.READ_DATA = '55 AA 07 08 00 FF 00 00 00 00 00 00 00 F0'
         # self.SERVO_OFF = '55 AA 07 08 01 01 00 00 00 00 00 00 00 00 F0'  伺服关闭
+
 
     def init(self):
 
@@ -37,22 +38,20 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.btn_open.clicked.connect(self.port_open)
         # 关闭串口按钮
         self.btn_close.clicked.connect(self.port_close)
-        # 发送数据按钮
-        # self.btn_send.clicked.connect(self.data_send)
 
         # self.radioButton1.setChecked(True)
         self.radioButton1.toggled.connect(self.button_active)
         self.radioButton2.toggled.connect(self.button_active)
+        self.radioButton_w.toggled.connect(self.button_active)
         self.radioButton3.toggled.connect(self.button_active_else)
         self.radioButton4.toggled.connect(self.button_active_else)
         self.radioButton5.toggled.connect(self.button_active_else)
         self.radioButton6.toggled.connect(self.button_active_else)
         self.btn_open.clicked.connect(self.data_receive)
+
         # 定时器接收数据
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.data_receive)
-
-        # self.timer_send = QTimer()
 
     # 打开串口
     def port_open(self):
@@ -83,47 +82,44 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.btn_open.setEnabled(True)
         self.btn_close.setEnabled(False)
 
-    # 显示收发数据
-    def dispContent(self, argvStr):
-        pass
-
 
     # 发送数据
     def data_send(self):
         if self.ser.isOpen():
             if self.active_button == '速度运行模式':
-                input_speed_initial1 = round(float(self.data_edit1.text()) * 100)
-                input_speed_initial2 = round(float(self.data_edit2.text()) * 100)
-
-                if input_speed_initial1 >= 0 and input_speed_initial2 >= 0:
-                    input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
-                    input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
-                    input_speed_form = '55 AA 07 08 03 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 00 F0'
-                    hex_command1 = bytes.fromhex(input_speed_form)
-                    self.ser.write(hex_command1)
-                    self.show_send.append(input_speed_form)
-                elif input_speed_initial1 < 0 and input_speed_initial2 < 0:
-
-                    input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
-                    input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
-                    input_speed_form = '55 AA 07 08 03 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 00 F0'
-                    hex_command1 = bytes.fromhex(input_speed_form)
-                    self.ser.write(hex_command1)
-                    self.show_send.append(input_speed_form)
-                elif input_speed_initial1 >= 0 and input_speed_initial2 < 0:
-                    input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
-                    input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
-                    input_speed_form = '55 AA 07 08 03 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 00 F0'
-                    hex_command1 = bytes.fromhex(input_speed_form)
-                    self.ser.write(hex_command1)
-                    self.show_send.append(input_speed_form)
-                elif input_speed_initial1 < 0 and input_speed_initial2 >= 0:
-                    input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
-                    input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
-                    input_speed_form = '55 AA 07 08 03 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 00 F0'
-                    hex_command1 = bytes.fromhex(input_speed_form)
-                    self.ser.write(hex_command1)
-                    self.show_send.append(input_speed_form)
+                hex_command1, input_speed_form = data_send_sudu(self.data_edit1.text(), self.data_edit2.text())
+                # input_speed_initial1 = round(float(self.data_edit1.text()) * 100)
+                # input_speed_initial2 = round(float(self.data_edit2.text()) * 100)
+                #
+                # if input_speed_initial1 >= 0 and input_speed_initial2 >= 0:
+                #     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
+                #     input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
+                #     input_speed_form = '55 AA 07 08 03 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 F0'
+                #     hex_command1 = bytes.fromhex(input_speed_form)
+                #     self.ser.write(hex_command1)
+                #     self.show_send.append(input_speed_form)
+                # elif input_speed_initial1 < 0 and input_speed_initial2 < 0:
+                #
+                #     input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
+                #     input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
+                #     input_speed_form = '55 AA 07 08 03 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 F0'
+                #     hex_command1 = bytes.fromhex(input_speed_form)
+                #     self.ser.write(hex_command1)
+                #     self.show_send.append(input_speed_form)
+                # elif input_speed_initial1 >= 0 and input_speed_initial2 < 0:
+                #     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
+                #     input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
+                #     input_speed_form = '55 AA 07 08 03 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 F0'
+                #     hex_command1 = bytes.fromhex(input_speed_form)
+                #     self.ser.write(hex_command1)
+                #     self.show_send.append(input_speed_form)
+                # elif input_speed_initial1 < 0 and input_speed_initial2 >= 0:
+                #     input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
+                #     input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
+                #     input_speed_form = '55 AA 07 08 03 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 F0'
+                #     hex_command1 = bytes.fromhex(input_speed_form)
+                self.ser.write(hex_command1)
+                self.show_send.append(input_speed_form)
 
 
             elif self.active_button == '位置运行模式':
@@ -134,7 +130,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
                     print(input_speed_1)
                     input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
-                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_1[0:2] + ' ' + input_speed_1[2:] + ' ' + input_speed_2[0:2] + ' ' + input_speed_2[2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_1[0:2] + ' ' + input_speed_1[2:] + ' ' + input_speed_2[0:2] + ' ' + input_speed_2[2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     print(type(hex_command1))
                     self.ser.write(hex_command1)
@@ -142,21 +138,21 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 elif input_speed_initial1 < 0 and input_speed_initial2 < 0:
                     input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
                     input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
-                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     self.ser.write(hex_command1)
                     self.show_send.append(input_speed_form)
                 elif input_speed_initial1 >= 0 and input_speed_initial2 < 0:
                     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
                     input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
-                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     self.ser.write(hex_command1)
                     self.show_send.append(input_speed_form)
                 elif input_speed_initial1 < 0 and input_speed_initial2 >= 0:
                     input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
                     input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
-                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 0C 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     self.ser.write(hex_command1)
                     self.show_send.append(input_speed_form)
@@ -168,7 +164,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 if input_speed_initial1 >= 0 and input_speed_initial2 >= 0:
                     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
                     input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
-                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_1[0:2] + ' ' + input_speed_1[2:] + ' ' + input_speed_2[0:2] + ' ' + input_speed_2[2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_1[0:2] + ' ' + input_speed_1[2:] + ' ' + input_speed_2[0:2] + ' ' + input_speed_2[2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     print(type(hex_command1))
                     self.ser.write(hex_command1)
@@ -176,21 +172,21 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 elif input_speed_initial1 < 0 and input_speed_initial2 < 0:
                     input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
                     input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
-                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     self.ser.write(hex_command1)
                     self.show_send.append(input_speed_form)
                 elif input_speed_initial1 >= 0 and input_speed_initial2 < 0:
                     input_speed_1 = hex(input_speed_initial1)[2:].zfill(4)
                     input_speed_abs2 = hex(32768 - abs(input_speed_initial2) + 32768)
-                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[2:] + ' ' + input_speed_abs2[-4:-2] + ' ' + str(input_speed_abs2)[-2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     self.ser.write(hex_command1)
                     self.show_send.append(input_speed_form)
                 elif input_speed_initial1 < 0 and input_speed_initial2 >= 0:
                     input_speed_abs1 = hex(32768 - abs(input_speed_initial1) + 32768)
                     input_speed_2 = hex(input_speed_initial2)[2:].zfill(4)
-                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 00 F0'
+                    input_speed_form = '55 AA 07 08 60 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[-2:] + ' ' + input_speed_2[0:2] + ' ' + str(input_speed_2)[2:] + ' 00 00 00 F0'
                     hex_command1 = bytes.fromhex(input_speed_form)
                     self.ser.write(hex_command1)
                     self.show_send.append(input_speed_form)
@@ -214,6 +210,10 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             # \x去除掉，取出YY，然后组成字符串返回
             # 如果接收到的是字符串，则使用decode进行解码
             print("接收到的数据 %s \n类型为: %s\n" % (recv, type(recv)))
+            print(dealStr[12:16])
+            print(type(dealStr[12:16]))
+            # print(eval(dealStr[12:16]))
+
             try:
                 dealStr = recv.decode()
             except (TypeError, UnicodeDecodeError):
@@ -223,9 +223,86 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                     dealStr += ' '
             print("处理后的数据 %s \n类型为: %s\n" % (dealStr, type(dealStr)))
 
-            # 显示接收到的数据
-            self.show_receive.append(dealStr)
 
+            dealStr_new = dealStr.replace(' ', '')  #去除首尾空格
+            print(dealStr_new)
+            print(type(dealStr_new))
+            recv1 = str(dealStr_new[8:10])  # 当前运行模式
+            print(recv1)
+            if recv1 == '03':
+                self.lineEdit_1.setText('速度运行模式')
+            elif recv1 == '0C':
+                self.lineEdit_1.setText('位置运行模式')
+            elif recv1 == '10':
+                self.lineEdit_1.setText('锁定')
+            elif recv1 == '60':
+                self.lineEdit_1.setText('稳定运行模式')
+            elif recv1 == '80':
+                self.lineEdit_1.setText('功放上电')
+            elif recv1 == '00':
+                self.lineEdit_1.setText('功放断电')
+            else:
+                pass
+            recv2 = str(dealStr_new[10:12])  # 转台到位状态
+            print(recv2)
+            if recv2 == '01':
+                self.lineEdit_2.setText('俯仰到位')
+            elif recv2 == '10':
+                self.lineEdit_2.setText('方位到位')
+            else:
+                pass
+
+            recv3 = '0x' + str(dealStr_new[12:20])   #方位角速度
+            print(recv3)
+            recv3_er = bin(int(recv3, 16))[2:].zfill(32)
+            print(type(recv3_er))
+            if recv3_er[0] == '1':
+                recv3_er_new = -(2**31 - int(recv3_er[1:], 2))
+                self.lineEdit_3.setText(str(round(recv3_er_new/14800, 2)))
+            else:
+                self.lineEdit_3.setText(str(round(int(recv3_er[1:], 2) / 14800, 2)))
+                # print(-int(recv3_er[1:],2))
+                # recv3_er_new = reverse(recv3_er[1:])
+                # recv3_er_add = add_1(recv3_er_new)
+                #
+                # self.lineEdit_3.setText(str(round(-int(recv3_er_add[1:],2)/14800, 2)))
+                # bin(int('0x11', 16)) 十六进制数转二进制数 输出字符串类型
+                # print(-int(recv3_er_add[1:],2))
+                # print('1111111111111111111111')
+
+
+            # recv3_angular_vel = round(eval(recv3)/14800, 2)
+            recv4 = '0x' + str(dealStr_new[20:28])   #俯仰角速度
+            recv4_er = bin(int(recv3, 16))[2:].zfill(32)
+            if recv4_er[0] == '1':
+                recv4_er_new = -(2 ** 31 - int(recv4_er[1:], 2))
+                self.lineEdit_4.setText(str(round(recv4_er_new / 14800, 2)))
+            else:
+                self.lineEdit_4.setText(str(round(int(recv4_er[1:], 2)/14800, 2)))
+            print(recv4)
+            # recv4_angular_vel = round(eval(recv4)/14800, 2)
+
+            recv5 = '0x' + str(dealStr_new[28:34])   #方位角度
+            recv5_er = bin(int(recv5, 16))[2:].zfill(24)
+            if recv5_er[0] == '1':
+                recv5_er_new = -(2 ** 23 - int(recv5_er[1:], 2))
+                self.lineEdit_5.setText(str(round(recv5_er_new / 100, 2)))
+            else:
+                self.lineEdit_5.setText(str(round(int(recv5_er[1:], 2) / 100, 2)))
+            print(recv5)
+            # recv5_angular_vel = round(eval(recv5)/100, 2)
+
+
+            recv6 = '0x' + str(dealStr_new[34:40])  # 俯仰角度
+            recv6_er = bin(int(recv6, 16))[2:].zfill(24)
+            if recv6_er[0] == '1':
+                recv6_er_new = -(2 ** 23 - int(recv6_er[1:], 2))
+                self.lineEdit_6.setText(str(round(recv6_er_new / 100, 2)))
+            else:
+                self.lineEdit_6.setText(str(round(int(recv6_er[1:], 2) / 100, 2)))
+            print(recv6)
+
+            # self.show_receive.append(dealStr)
 
 
 
@@ -253,7 +330,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
     # 位置模式和速度模式按钮动作
     def button_active(self):
         radiobutton = self.sender()
-        if radiobutton.text() == '速度运行模式' or radiobutton.text() == '位置运行模式':
+        if radiobutton.text() == '速度运行模式' or radiobutton.text() == '稳定运行模式' or radiobutton.text() == '位置运行模式':
             self.active_button = radiobutton.text()
             self.data_edit1.setEnabled(True)
             self.data_edit2.setEnabled(True)
@@ -282,7 +359,6 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 self.btn_send.clicked.connect(self.str_data_send)
             else:
                 pass
-
 
 
 if __name__ == '__main__':
