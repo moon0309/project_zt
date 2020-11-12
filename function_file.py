@@ -1,4 +1,5 @@
 
+# 数据发送函数
 def data_send_function(str1, str2, str3):
     global input_speed_form
     global hex_command1
@@ -40,3 +41,16 @@ def data_send_function(str1, str2, str3):
         hex_command1 = bytes.fromhex(input_speed_form)
 
     return hex_command1, input_speed_form
+
+
+
+
+# 接收数据后判断正负，有符号十六进制数转为十进制数
+def data_receive_process(str1, int1):
+    rec3_er = bin(int(str1, 16))[2:].zfill(int1)
+    if rec3_er[0] == '1':
+        rec3_er_new = -(2 ** (int1-1) - int(rec3_er[1:], 2))/14800
+    else:
+        rec3_er_new = int(rec3_er[1:], 2) / 14800
+    return rec3_er_new
+
