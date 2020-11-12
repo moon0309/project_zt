@@ -1,8 +1,9 @@
 import sys
 from Pro import Ui_MainWindow
 import serial
+import qtawesome
 import serial.tools.list_ports
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import function_file
@@ -15,6 +16,8 @@ https://www.cnblogs.com/ubuntu1987/archive/2004/01/13/12191633.html
 https://www.pythonf.cn/read/108311
 https://blog.csdn.net/liuxf196921/article/details/88165399
 https://www.jianshu.com/p/d4c0169a28db
+https://blog.csdn.net/qq_44880255/article/details/106957320?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~first_rank_v2~rank_v28-3-106957320.nonecase&utm_term=pyqt%20qslider%E5%88%BB%E5%BA%A6%E6%A0%B7%E5%BC%8F&spm=1000.2123.3001.4430
+https://blog.csdn.net/fhqlongteng/article/details/78535393
 '''
 
 
@@ -26,6 +29,36 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("转台上位机")
         self.ser = serial.Serial()
         # self.port_check()
+        spin_icon = qtawesome.icon('fa.star', color='darkolivegreen')
+        self.setWindowIcon(spin_icon)
+        # 刷新一下串口的列表
+        self.refresh()
+
+        # Dial表盘
+        self.dial.setNotchesVisible(True)  # 设置刻度
+        self.dial.setPageStep(0.01)  # 翻页步长
+        # self.dial.setNotchTarget(0.01)
+        self.dial.setNotchTarget(5)  # 设置刻度密度，即单位刻度所代表的大小
+        self.dial.setRange(-180, 180)  # 设置范围
+        self.dial.setWrapping(True)  # 刻度不留缺口
+
+        # slider垂直滑动条
+        # 设置最小值
+        self.verticalSlider.setMinimum(-180)
+        # 设置最大值
+        self.verticalSlider.setMaximum(180)
+        # 设置步长
+        self.verticalSlider.setSingleStep(0.01)
+        # 设置当前值
+        self.verticalSlider.setValue(0)
+        # 设置在垂直滑块左侧绘制刻度线
+        self.verticalSlider.setTickPosition(QSlider.TicksLeft)
+        # 设置刻度间隔
+        self.verticalSlider.setTickInterval(0.01)
+
+        # # 给定默认初始发送数据
+        # self.data_edit1.setText('0.00')
+        # self.data_edit2.setText('0.00')
 
         self.active_button = ''
         self.POWER_ON = '55 AA 07 08 80 00 00 00 00 00 00 00 00 F0'
@@ -48,16 +81,39 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.radioButton1.toggled.connect(self.button_active)
         self.radioButton2.toggled.connect(self.button_active)
         self.radioButton_w.toggled.connect(self.button_active)
-        self.radioButton3.toggled.connect(self.button_active_else)
-        self.radioButton4.toggled.connect(self.button_active_else)
-        self.radioButton5.toggled.connect(self.button_active_else)
-        self.radioButton6.toggled.connect(self.button_active_else)
+        self.pushButton_on.clicked.connect(self.button_active_else)
+        self.pushButton_off.clicked.connect(self.button_active_else)
+        self.pushButton_lock.clicked.connect(self.button_active_else)
+        # self.radioButton6.toggled.connect(self.button_active_else)
         self.btn_open.clicked.connect(self.data_receive)
+        self.verticalSlider.valueChanged.connect(self.valueChange_slider)
+        self.dial.valueChanged.connect(self.valueChange_dial)
+        # 刷新串口外设按钮
+        self.pushButton_flash.clicked.connect(self.refresh)
+
         # 定时器接收数据
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.data_receive)
 
         # self.timer_send = QTimer()
+
+    # 刷新一下串口
+    def refresh(self):
+        # 查询可用的串口
+        plist = list(serial.tools.list_ports.comports())
+
+        if len(plist) <= 0:
+            print("No used com!")
+            # self.statusBar.showMessage('没有可用的串口')
+
+
+        else:
+            # 把所有的可用的串口输出到comboBox中去
+            self.cmb_port_name.clear()
+
+            for i in range(0, len(plist)):
+                plist_0 = list(plist[i])
+                self.cmb_port_name.addItem(str(plist_0[0]))
 
     # 打开串口
     def port_open(self):
@@ -87,14 +143,27 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.btn_open.setEnabled(True)
         self.btn_close.setEnabled(False)
 
-    # 显示收发数据
-    def dispContent(self, argvStr):
-        pass
+    # 显示滑动条数据
+    def valueChange_slider(self):
+        value = self.verticalSlider.value()
+        self.data_edit2.setText(str(value))
+
+    # 显示圆盘数据
+    def valueChange_dial(self):
+        # self.dial.setRange(-100, 100)  # 设置范围
+        # self.dial.setWrapping(False)  # 刻度不留缺口
+        value = self.dial.value()
+        self.data_edit1.setText(str(value))
+
+    # def init_data_edit(self):
+    #     self.data_edit1.setText('0.00')
+    #     self.data_edit2.setText('0.00')
 
     # 发送数据
     def data_send(self):
         if self.ser.isOpen():
             if self.active_button == '速度运行模式':
+
                 input_speed_initial1 = round(float(self.data_edit1.text()) * 100)
                 input_speed_initial2 = round(float(self.data_edit2.text()) * 100)
                 hex_command1, input_speed_form = function_file.data_send_function(input_speed_initial1, input_speed_initial2,
@@ -191,26 +260,24 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             self.lineEdit_6.setText(str(round(recv6_er_new, 2)))
 
 
-
-
-    ''' 功放、锁定、伺服选定时直接发送的数据 '''
-    def str_data_send(self):
-        if self.active_button == '功放上电':
-            hex_command = bytes.fromhex(self.POWER_ON)
-            self.ser.write(hex_command)
-            self.show_send.append(self.POWER_ON)
-        elif self.active_button == '功放断电':
-            hex_command = bytes.fromhex(self.POWER_OFF)
-            self.ser.write(hex_command)
-            self.show_send.append(self.POWER_OFF)
-        elif self.active_button == '锁定':
-            hex_command = bytes.fromhex(self.LOCK)
-            self.ser.write(hex_command)
-            self.show_send.append(self.LOCK)
-        elif self.active_button == '取数指令':
-            hex_command = bytes.fromhex(self.READ_DATA)
-            self.ser.write(hex_command)
-            self.show_send.append(self.READ_DATA)
+    # ''' 功放、锁定、伺服选定时直接发送的数据 '''
+    # def str_data_send(self):
+    #     if self.active_button == '功放上电':
+    #         hex_command = bytes.fromhex(self.POWER_ON)
+    #         self.ser.write(hex_command)
+    #         self.show_send.append(self.POWER_ON)
+    #     elif self.active_button == '功放断电':
+    #         hex_command = bytes.fromhex(self.POWER_OFF)
+    #         self.ser.write(hex_command)
+    #         self.show_send.append(self.POWER_OFF)
+    #     elif self.active_button == '锁定':
+    #         hex_command = bytes.fromhex(self.LOCK)
+    #         self.ser.write(hex_command)
+    #         self.show_send.append(self.LOCK)
+        # elif self.active_button == '取数指令':
+        #     hex_command = bytes.fromhex(self.READ_DATA)
+        #     self.ser.write(hex_command)
+        #     self.show_send.append(self.READ_DATA)
 
 
 
@@ -219,6 +286,8 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         radiobutton = self.sender()
         if radiobutton.text() == '速度运行模式' or radiobutton.text() == '稳定运行模式' or radiobutton.text() == '位置运行模式':
             self.active_button = radiobutton.text()
+            self.data_edit1.setText('0.00')
+            self.data_edit2.setText('0.00')
             self.data_edit1.setEnabled(True)
             self.data_edit2.setEnabled(True)
             if radiobutton.isChecked() == True:
@@ -229,24 +298,102 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 self.btn_send.clicked.connect(self.data_send)
             else:
                 pass
+            if radiobutton.text() == '速度运行模式' or radiobutton.text() == '稳定运行模式':
+                # Dial表盘
+                self.dial.setNotchesVisible(True)  # 设置刻度
+                self.dial.setPageStep(0.01)  # 翻页步长
+                # self.dial.setNotchTarget(0.01)
+                # 设置当前值
+                self.dial.setValue(0)
+                self.dial.setNotchTarget(5)  # 设置刻度密度，即单位刻度所代表的大小
+                self.dial.setRange(-100, 100)  # 设置范围
+                self.dial.setWrapping(False)  # 刻度不留缺口
+
+                # slider垂直滑动条
+                # 设置最小值
+                self.verticalSlider.setMinimum(-100)
+                # 设置最大值
+                self.verticalSlider.setMaximum(100)
+                # 设置步长
+                self.verticalSlider.setSingleStep(0.01)
+                # 设置当前值
+                self.verticalSlider.setValue(0)
+                # 设置在垂直滑块左侧绘制刻度线
+                self.verticalSlider.setTickPosition(QSlider.TicksLeft)
+                # 设置刻度间隔
+                self.verticalSlider.setTickInterval(0.01)
+
+            elif radiobutton.text() == '位置运行模式':
+                # Dial表盘
+                self.dial.setNotchesVisible(True)  # 设置刻度
+                self.dial.setPageStep(0.01)  # 翻页步长
+                # self.dial.setNotchTarget(0.01)
+                # 设置当前值
+                self.dial.setValue(0)
+                self.dial.setNotchTarget(5)  # 设置刻度密度，即单位刻度所代表的大小
+                self.dial.setRange(0, 360)  # 设置范围
+                self.dial.setWrapping(True)  # 刻度不留缺口
+
+                # slider垂直滑动条
+                # 设置最小值
+                self.verticalSlider.setMinimum(-10)
+                # 设置最大值
+                self.verticalSlider.setMaximum(90)
+                # 设置步长
+                self.verticalSlider.setSingleStep(0.01)
+                # 设置当前值
+                self.verticalSlider.setValue(0)
+                # 设置在垂直滑块左侧绘制刻度线
+                self.verticalSlider.setTickPosition(QSlider.TicksLeft)
+                # 设置刻度间隔
+                self.verticalSlider.setTickInterval(0.01)
 
     # 功放、伺服关闭、断电按钮动作
     def button_active_else(self):
-        radiobutton = self.sender()
-        if radiobutton.text() == '功放上电' or radiobutton.text() == '功放断电' or radiobutton.text() == '锁定' or radiobutton.text() == '取数指令':
-            self.active_button = radiobutton.text()
+        button_txt = self.sender()
+        # if button_txt.text() == '功放上电' or button_txt.text() == '功放断电' or button_txt.text() == '锁定':
+        #     self.active_button = button_txt.text()
+        #     self.data_edit1.setEnabled(False)
+        #     self.data_edit2.setEnabled(False)
+        if button_txt.text() == '功放上电':
+            self.data_edit1.clear()
+            self.data_edit2.clear()
             self.data_edit1.setEnabled(False)
             self.data_edit2.setEnabled(False)
-
-            if radiobutton.isChecked() == True:
-                print('<' + radiobutton.text() + '>被选中')
-                # 发送数据按钮
-                print('<' + radiobutton.text() + '>下的数据:')
-                self.btn_send.disconnect()
-                self.btn_send.clicked.connect(self.str_data_send)
-            else:
-                pass
-
+            print('<' + button_txt.text() + '>被选中')
+            # 发送数据按钮
+            print('<' + button_txt.text() + '>下的数据:')
+            # self.btn_send.disconnect()
+            hex_command = bytes.fromhex(self.POWER_ON)
+            self.ser.write(hex_command)
+            self.show_send.append(self.POWER_ON)
+            # self.pushButton_on.clicked.connect(self.str_data_send)
+        elif button_txt.text() == '功放断电':
+            self.data_edit1.clear()
+            self.data_edit2.clear()
+            self.data_edit1.setEnabled(False)
+            self.data_edit2.setEnabled(False)
+            print('<' + button_txt.text() + '>被选中')
+            # 发送数据按钮
+            print('<' + button_txt.text() + '>下的数据:')
+            # self.btn_send.disconnect()
+            hex_command = bytes.fromhex(self.POWER_OFF)
+            self.ser.write(hex_command)
+            self.show_send.append(self.POWER_OFF)
+            # self.pushButton_off.clicked.connect(self.str_data_send)
+        elif button_txt.text() == '锁定':
+            self.data_edit1.clear()
+            self.data_edit2.clear()
+            self.data_edit1.setEnabled(False)
+            self.data_edit2.setEnabled(False)
+            print('<' + button_txt.text() + '>被选中')
+            # 发送数据按钮
+            print('<' + button_txt.text() + '>下的数据:')
+            # self.btn_send.disconnect()
+            hex_command = bytes.fromhex(self.LOCK)
+            self.ser.write(hex_command)
+            self.show_send.append(self.LOCK)
+            # self.pushButton_lock.clicked.connect(self.str_data_send)
 
 
 if __name__ == '__main__':
