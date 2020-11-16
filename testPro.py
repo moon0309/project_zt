@@ -7,6 +7,15 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import function_file
+from pyqtgraph import PlotWidget
+from PyQt5 import QtCore
+import numpy as np
+import pyqtgraph as pq
+import pyqtgraph as pg
+
+#解决打包时递归超过最大深度问题
+sys.setrecursionlimit(100000)
+
 # from function_file import data_send_function
 
 
@@ -18,6 +27,10 @@ https://blog.csdn.net/liuxf196921/article/details/88165399
 https://www.jianshu.com/p/d4c0169a28db
 https://blog.csdn.net/qq_44880255/article/details/106957320?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~first_rank_v2~rank_v28-3-106957320.nonecase&utm_term=pyqt%20qslider%E5%88%BB%E5%BA%A6%E6%A0%B7%E5%BC%8F&spm=1000.2123.3001.4430
 https://blog.csdn.net/fhqlongteng/article/details/78535393
+https://zhuanlan.zhihu.com/p/100798858
+https://blog.csdn.net/weixin_40796925/article/details/107733966
+https://blog.csdn.net/qq_41590417/article/details/80477990
+https://blog.csdn.net/weixin_40796925/article/details/107730799
 '''
 
 
@@ -26,10 +39,11 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         super(Pyqt5Serial, self).__init__()
         self.setupUi(self)
         self.init()
-        self.setWindowTitle("转台上位机")
+        self.setWindowTitle("转台上位机_V1.0")
         self.ser = serial.Serial()
         # self.port_check()
-        spin_icon = qtawesome.icon('fa.star', color='darkolivegreen')
+        # spin_icon = qtawesome.icon('fa.star', color='darkolivegreen')
+        spin_icon = QIcon('./pic.png')
         self.setWindowIcon(spin_icon)
         # 刷新一下串口的列表
         self.refresh()
@@ -56,16 +70,20 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         # 设置刻度间隔
         self.verticalSlider.setTickInterval(0.01)
 
-        # # 给定默认初始发送数据
-        # self.data_edit1.setText('0.00')
-        # self.data_edit2.setText('0.00')
-
         self.active_button = ''
         self.POWER_ON = '55 AA 07 08 80 00 00 00 00 00 00 00 00 F0'
         self.POWER_OFF = '55 AA 07 08 00 00 00 00 00 00 00 00 00 F0'
         self.LOCK = '55 AA 07 08 10 00 00 00 00 00 00 00 00 F0'
         self.READ_DATA = '55 AA 07 08 00 FF 00 00 00 00 00 00 00 F0'
         # self.SERVO_OFF = '55 AA 07 08 01 01 00 00 00 00 00 00 00 00 F0'  伺服关闭
+
+
+        # 绘图
+        # self.plotWidget_ted = PlotWidget(self)
+        # self.plotWidget_ted.plot([1, 2, 3, 4, 5], pen='r', symbol='o')
+        # self.widget.addAction(self.plotWidget_ted)
+        # 生成 300 个正态分布的随机数
+        # self.data1 = np.random.normal(size=10)
 
 
     def init(self):
@@ -94,8 +112,88 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         # 定时器接收数据
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.data_receive)
+        # self.groupBox_2.plot([1, 2, 3, 4, 5], pen='r', symbol='o')
 
         # self.timer_send = QTimer()
+
+        self.data1 = np.zeros(10)
+        print(self.data1)
+        # self.data2 = np.random.normal(size=10)
+        self.data2 = np.zeros(10)
+        self.data3 = np.zeros(10)
+        self.data4 = np.zeros(10)
+
+        self.curve1 = self.plotWidget_ted_1.plot(self.data1, name="mode2")
+        self.curve2 = self.plotWidget_ted_2.plot(self.data2, name="mode3")
+        self.curve3 = self.plotWidget_ted_3.plot(self.data3, name="mode4")
+        self.curve4 = self.plotWidget_ted_4.plot(self.data4, name="mode5")
+        self.ptr1 = 0
+        self.ptr2 = 0
+        self.ptr3 = 0
+        self.ptr4 = 0
+
+        # # 设定定时器
+        # self.timer = pq.QtCore.QTimer()
+        # # 定时器信号绑定 update_data 函数
+        # self.timer.timeout.connect(self.update_data)
+
+    # # 定时器间隔50ms，可以理解为 50ms 刷新一次数据
+    # self.timer.start(50)
+
+    # 数据左移
+    # def update_data(self):
+    #     data_received = self.data_receive()
+    #     print('cccccccccccccccccccccccc')
+    #     print(data_received)
+    #     # while data_received != [0,0,0,0]:
+    #     # 线1
+    #     self.data1[:-1] = self.data1[1:]
+    #
+        # self.data1[-1] = np.random.normal()
+        # self.data1[-1] = data_received[0]
+        # print('bbbbbbbbbbbbbbbbbbbbbbbbbbb')
+        # print(self.data1)
+        # # 数据填充到绘制曲线中
+        # self.curve1.setData(self.data1)
+        # # x 轴记录点
+        # self.ptr1 += 1
+        # # 重新设定 x 相关的坐标原点
+        # self.curve1.setPos(self.ptr1, 0)
+        #
+        # # 线2
+        # self.data2[:-1] = self.data2[1:]
+        # # self.data2[-1] = np.random.normal()
+        # self.data2[-1] = data_received[1]
+        # # 数据填充到绘制曲线中
+        # self.curve2.setData(self.data2)
+        # # x 轴记录点
+        # self.ptr2 += 1
+        # # 重新设定 x 相关的坐标原点
+        # self.curve2.setPos(self.ptr2, 0)
+        #
+        # # 线3
+        # self.data3[:-1] = self.data3[1:]
+        # # self.data1[-1] = np.random.normal()
+        # self.data3[-1] = data_received[2]
+        # # 数据填充到绘制曲线中
+        # self.curve3.setData(self.data3)
+        # # x 轴记录点
+        # self.ptr3 += 1
+        # # 重新设定 x 相关的坐标原点
+        # self.curve3.setPos(self.ptr3, 0)
+        #
+        # # 线4
+        # self.data4[:-1] = self.data4[1:]
+        # # self.data1[-1] = np.random.normal()
+        # self.data4[-1] = data_received[3]
+        # # 数据填充到绘制曲线中
+        # self.curve4.setData(self.data4)
+        # # x 轴记录点
+        # self.ptr4 += 1
+        # # 重新设定 x 相关的坐标原点
+        # self.curve4.setPos(self.ptr4, 0)
+
+
 
     # 刷新一下串口
     def refresh(self):
@@ -105,7 +203,6 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         if len(plist) <= 0:
             print("No used com!")
             # self.statusBar.showMessage('没有可用的串口')
-
 
         else:
             # 把所有的可用的串口输出到comboBox中去
@@ -128,7 +225,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             return None
 
         # 打开串口接收定时器，周期为2ms
-        self.timer.start(2)
+        self.timer.start(20)
 
         if self.ser.isOpen():
             self.btn_open.setEnabled(False)
@@ -189,76 +286,167 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 
     #接收数据
     def data_receive(self):
+        # data1 = []
+        # nn = []
+        data_s = [0,0,0,0]
         try:
             count = self.ser.inWaiting()
         except:
             self.port_close()
-            return None
+            return data_s
         if count != 0:
             dealStr = ''
             # 读串口数据
             recv = self.ser.read(count)
+            print(recv[:1])
             # 在这里将接收到数据进行区分：hex 或 字符串
             # hex 格式：\xYY\xYY\xYY，如果接收到的字符是这种格式，则说明是hex字符，我们需要将
             # \x去除掉，取出YY，然后组成字符串返回
             # 如果接收到的是字符串，则使用decode进行解码
             print("接收到的数据 %s \n类型为: %s\n" % (recv, type(recv)))
-            print(dealStr[12:16])
-            print(type(dealStr[12:16]))
+            # print(dealStr[12:16])
+            # print(type(dealStr[12:16]))
 
             try:
                 dealStr = recv.decode()
             except (TypeError, UnicodeDecodeError):
                 for i in range(len(recv)):
-                    dealStr += hex(recv[i])[2:]
+                    # print(recv[i])
+                    dealStr += hex(recv[i])[2:].zfill(2)
+                    # print(dealStr)
                     dealStr += ' '
             print("处理后的数据 %s \n类型为: %s\n" % (dealStr, type(dealStr)))
+            print(len(dealStr))
+            print(type(len(dealStr)))
+            print(dealStr[:5])
+            print(dealStr[len(dealStr)-3:])
+            dd = dealStr[len(dealStr)-3:len(dealStr)-1]
+            print(type(dd))
+
+            if dealStr[:5] == '55 aa' and dealStr[len(dealStr)-3:len(dealStr)-1] == 'f0' and len(dealStr) == 66:
+                dealStr_new = dealStr.replace(' ', '')  #去除首尾空格
+                print(dealStr_new)
+                print(type(dealStr_new))
+                recv1 = str(dealStr_new[8:10])  # 当前运行模式
+                print(recv1)
+                if recv1 == '03':
+                    self.lineEdit_1.setText('速度运行模式')
+                elif recv1 == '0C':
+                    self.lineEdit_1.setText('位置运行模式')
+                elif recv1 == '10':
+                    self.lineEdit_1.setText('锁定')
+                elif recv1 == '60':
+                    self.lineEdit_1.setText('稳定运行模式')
+                elif recv1 == '80':
+                    self.lineEdit_1.setText('功放上电')
+                elif recv1 == '00':
+                    self.lineEdit_1.setText('功放断电')
+                else:
+                    pass
+                recv2 = str(dealStr_new[10:12])  # 转台到位状态
+                print(recv2)
+                if recv2 == '01':
+                    self.lineEdit_2.setText('俯仰到位')
+                elif recv2 == '10':
+                    self.lineEdit_2.setText('方位到位')
+                    print('11111111111111111111111')
+                else:
+                    pass
 
 
-            dealStr_new = dealStr.replace(' ', '')  #去除首尾空格
-            print(dealStr_new)
-            print(type(dealStr_new))
-            recv1 = str(dealStr_new[8:10])  # 当前运行模式
-            print(recv1)
-            if recv1 == '03':
-                self.lineEdit_1.setText('速度运行模式')
-            elif recv1 == '0C':
-                self.lineEdit_1.setText('位置运行模式')
-            elif recv1 == '10':
-                self.lineEdit_1.setText('锁定')
-            elif recv1 == '60':
-                self.lineEdit_1.setText('稳定运行模式')
-            elif recv1 == '80':
-                self.lineEdit_1.setText('功放上电')
-            elif recv1 == '00':
-                self.lineEdit_1.setText('功放断电')
+                recv3 = '0x' + str(dealStr_new[12:20])   #方位角速度
+                recv3_er_new = function_file.data_receive_process(recv3, 32, 14800)
+                r_3 = '%.04f' % (round(recv3_er_new, 4))
+                self.lineEdit_3.setText(str(r_3))
+
+                recv4 = '0x' + str(dealStr_new[20:28])   #俯仰角速度
+                recv4_er_new = function_file.data_receive_process(recv4, 32, 14800)
+                r_4 = '%.04f'%(round(recv4_er_new, 4))
+                self.lineEdit_4.setText(str(r_4))
+
+                recv5 = '0x' + str(dealStr_new[28:34])   #方位角度
+                recv5_er_new = function_file.data_receive_process(recv5, 24, 1000)
+                r_5 = '%.04f'%(round(recv5_er_new, 4))
+                self.lineEdit_5.setText(str(r_5))
+
+                recv6 = '0x' + str(dealStr_new[34:40])  # 俯仰角度
+                recv6_er_new = function_file.data_receive_process(recv6, 24, 1000)
+                r_6 = '%.04f'%(round(recv6_er_new, 4))
+                self.lineEdit_6.setText(str(r_6))
+                # data_s[0] = r_3
+                # data_s[1] = r_4
+                # data_s[2] = r_5
+                # data_s[3] = r_6
+                # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+                # print(data_s)
+                self.data1[:-1] = self.data1[1:]
+
+                # self.data1[-1] = np.random.normal()
+                self.data1[-1] = r_3
+                print('bbbbbbbbbbbbbbbbbbbbbbbbbbb')
+                print(self.data1)
+                # 数据填充到绘制曲线中
+                self.curve1.setData(self.data1)
+                # x 轴记录点
+                self.ptr1 += 1
+                # 重新设定 x 相关的坐标原点
+                self.curve1.setPos(self.ptr1, 0)
+                # return data_s
+
+                # 线2
+                self.data2[:-1] = self.data2[1:]
+                # self.data2[-1] = np.random.normal()
+                self.data2[-1] = r_4
+                # 数据填充到绘制曲线中
+                self.curve2.setData(self.data2)
+                # x 轴记录点
+                self.ptr2 += 1
+                # 重新设定 x 相关的坐标原点
+                self.curve2.setPos(self.ptr2, 0)
+
+                # 线3
+                self.data3[:-1] = self.data3[1:]
+                # self.data1[-1] = np.random.normal()
+                self.data3[-1] = r_5
+                # 数据填充到绘制曲线中
+                self.curve3.setData(self.data3)
+                # x 轴记录点
+                self.ptr3 += 1
+                # 重新设定 x 相关的坐标原点
+                self.curve3.setPos(self.ptr3, 0)
+
+                # 线4
+                self.data4[:-1] = self.data4[1:]
+                # self.data1[-1] = np.random.normal()
+                self.data4[-1] = r_6
+                # 数据填充到绘制曲线中
+                self.curve4.setData(self.data4)
+                # x 轴记录点
+                self.ptr4 += 1
+                # 重新设定 x 相关的坐标原点
+                self.curve4.setPos(self.ptr4, 0)
+
+
             else:
                 pass
-            recv2 = str(dealStr_new[10:12])  # 转台到位状态
-            print(recv2)
-            if recv2 == '01':
-                self.lineEdit_2.setText('俯仰到位')
-            elif recv2 == '10':
-                self.lineEdit_2.setText('方位到位')
-            else:
-                pass
+        else:
+            pass
 
-            recv3 = '0x' + str(dealStr_new[12:20])   #方位角速度
-            recv3_er_new = function_file.data_receive_process(recv3, 32)
-            self.lineEdit_3.setText(str(round(recv3_er_new, 2)))
 
-            recv4 = '0x' + str(dealStr_new[20:28])   #俯仰角速度
-            recv4_er_new = function_file.data_receive_process(recv4, 32)
-            self.lineEdit_4.setText(str(round(recv4_er_new, 2)))
+                # nn.append('%.04f' % (round(recv3_er_new, 4)))
+                # nn.append('%.04f' % (round(recv4_er_new, 4)))
+                # nn.append('%.04f' % (round(recv5_er_new, 4)))
+                # nn.append('%.04f' % (round(recv6_er_new, 4)))
+                # data1 = np.array(nn)
+                # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+                # print(data1)
+                # print(type(data1))
 
-            recv5 = '0x' + str(dealStr_new[28:34])   #方位角度
-            recv5_er_new = function_file.data_receive_process(recv5, 24)
-            self.lineEdit_5.setText(str(round(recv5_er_new, 2)))
-
-            recv6 = '0x' + str(dealStr_new[34:40])  # 俯仰角度
-            recv6_er_new = function_file.data_receive_process(recv6, 24)
-            self.lineEdit_6.setText(str(round(recv6_er_new, 2)))
-
+                # self.c = self.plotWidget_ted_1.plot(data1, name="mode2")
+                # # self.ptr1 = 0
+                # self.timer.timeout.connect(self.update_data)
+                # # # 定时器间隔50ms，可以理解为 50ms 刷新一次数据
+                # self.timer.start(50)
 
     # ''' 功放、锁定、伺服选定时直接发送的数据 '''
     # def str_data_send(self):
@@ -278,8 +466,6 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         #     hex_command = bytes.fromhex(self.READ_DATA)
         #     self.ser.write(hex_command)
         #     self.show_send.append(self.READ_DATA)
-
-
 
     # 位置模式和速度模式按钮动作
     def button_active(self):
@@ -399,7 +585,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     myshow = Pyqt5Serial()
-    myshow.show()
+    myshow.showMaximized()  #窗口最大化显示
     sys.exit(app.exec_())
 
 # if __name__ == '__main__':
