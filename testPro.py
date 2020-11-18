@@ -1,20 +1,25 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+# Author: Lian Yue
+
 import sys
 from Pro import Ui_MainWindow
 import serial
-import qtawesome
+# import qtawesome
 import serial.tools.list_ports
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
+from PyQt5.QtCore import QTimer
+# from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QMainWindow, QApplication, QSlider, QMessageBox
+# from PyQt5.QtWidgets import *
+# from PyQt5.QtGui import *
+from PyQt5 import QtGui
 import function_file
-from pyqtgraph import PlotWidget
-from PyQt5 import QtCore
+
 import numpy as np
-import pyqtgraph as pq
-import pyqtgraph as pg
+
 
 #解决打包时递归超过最大深度问题
-sys.setrecursionlimit(100000)
+# sys.setrecursionlimit(100000)
 
 # from function_file import data_send_function
 
@@ -30,7 +35,7 @@ https://blog.csdn.net/fhqlongteng/article/details/78535393
 https://zhuanlan.zhihu.com/p/100798858
 https://blog.csdn.net/weixin_40796925/article/details/107733966
 https://blog.csdn.net/qq_41590417/article/details/80477990
-https://blog.csdn.net/weixin_40796925/article/details/107730799
+https://blog.csdn.net/weixin_40796925/article/details/107730799  建立 PlotWidget 控件
 '''
 
 
@@ -39,11 +44,11 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         super(Pyqt5Serial, self).__init__()
         self.setupUi(self)
         self.init()
-        self.setWindowTitle("转台上位机_V1.0")
+        self.setWindowTitle("转台上位机_V2.0")
         self.ser = serial.Serial()
         # self.port_check()
         # spin_icon = qtawesome.icon('fa.star', color='darkolivegreen')
-        spin_icon = QIcon('./pic.png')
+        spin_icon = QtGui.QIcon('./pic.png')
         self.setWindowIcon(spin_icon)
         # 刷新一下串口的列表
         self.refresh()
@@ -116,12 +121,12 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 
         # self.timer_send = QTimer()
 
-        self.data1 = np.zeros(10)
+        self.data1 = np.zeros(200)
         print(self.data1)
         # self.data2 = np.random.normal(size=10)
-        self.data2 = np.zeros(10)
-        self.data3 = np.zeros(10)
-        self.data4 = np.zeros(10)
+        self.data2 = np.zeros(200)
+        self.data3 = np.zeros(200)
+        self.data4 = np.zeros(200)
 
         self.curve1 = self.plotWidget_ted_1.plot(self.data1, name="mode2")
         self.curve2 = self.plotWidget_ted_2.plot(self.data2, name="mode3")
