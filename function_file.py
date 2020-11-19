@@ -1,4 +1,9 @@
 
+
+def print_string_hex(data):
+    lin = ['%02X' % ord(i) for i in data]
+    print(" ".join(lin))
+
 # 数据发送函数
 def data_send_function(str1, str2, str3):
     global input_speed_form
@@ -7,37 +12,84 @@ def data_send_function(str1, str2, str3):
     if str1 >= 0 and str2 >= 0:
         input_speed_1 = hex(str1)[2:].zfill(4)
         input_speed_2 = hex(str2)[2:].zfill(4)
-        input_speed_form = str3 + input_speed_1[0:2] + ' ' + str(input_speed_1)[
+        # 校验位
+        lit = [0xAA, 0x07, 0x08, eval('0x'+str3), 0x00, eval('0x'+input_speed_1[0:2]), eval('0x'+str(input_speed_1)[
+                                                                             2:]), eval('0x'+input_speed_2[0:2]), eval('0x'+str(input_speed_2)[
+                                                                             2:]), 0x00, 0x00]
+        t = None
+        for i in range(len(lit)):
+            if i:
+                t ^= lit[i]
+            else:
+                t = lit[i] ^ 0
+
+        input_speed_form = '55 AA 07 08 ' + str3 + ' 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[
                                                                              2:] + ' ' + input_speed_2[
                                                                                          0:2] + ' ' + str(
-            input_speed_2)[2:] + ' 00 00 00 F0'
+            input_speed_2)[2:] + ' 00 00 ' + hex(t)[2:] + ' F0'
         hex_command1 = bytes.fromhex(input_speed_form)
 
     elif str1 < 0 and str2 < 0:
         input_speed_abs1 = hex(32768 - abs(str1) + 32768)
         input_speed_abs2 = hex(32768 - abs(str2) + 32768)
-        input_speed_form = str3 + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[
+        # 校验位
+        lit = [0xAA, 0x07, 0x08, eval('0x' + str3), 0x00, eval('0x' + input_speed_abs1[-4:-2]), eval('0x' + str(input_speed_abs1)[
+                                                                                      -2:]), eval('0x' + input_speed_abs2[-4:-2]),
+               eval('0x' + str(input_speed_abs2)[
+                      -2:]), 0x00, 0x00]
+        t = None
+        for i in range(len(lit)):
+            if i:
+                t ^= lit[i]
+            else:
+                t = lit[i] ^ 0
+        input_speed_form = '55 AA 07 08 ' + str3 + ' 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[
                                                                                   -2:] + ' ' + input_speed_abs2[
                                                                                                -4:-2] + ' ' + str(
-            input_speed_abs2)[-2:] + ' 00 00 00 F0'
+            input_speed_abs2)[-2:] + ' 00 00 ' + hex(t)[2:] + ' F0'
+
         hex_command1 = bytes.fromhex(input_speed_form)
 
     elif str1 >= 0 and str2 < 0:
         input_speed_1 = hex(str1)[2:].zfill(4)
         input_speed_abs2 = hex(32768 - abs(str2) + 32768)
-        input_speed_form = str3 + input_speed_1[0:2] + ' ' + str(input_speed_1)[
+        # 校验位
+        lit = [0xAA, 0x07, 0x08, eval('0x' + str3), 0x00, eval('0x' + input_speed_1[0:2]), eval('0x' + str(input_speed_1)[
+                                                                                           2:]),
+               eval('0x' + input_speed_abs2[-4:-2]),
+               eval('0x' + str(input_speed_abs2)[
+                      -2:]), 0x00, 0x00]
+        t = None
+        for i in range(len(lit)):
+            if i:
+                t ^= lit[i]
+            else:
+                t = lit[i] ^ 0
+        input_speed_form = '55 AA 07 08 ' + str3 + ' 00 ' + input_speed_1[0:2] + ' ' + str(input_speed_1)[
                                                                              2:] + ' ' + input_speed_abs2[
                                                                                          -4:-2] + ' ' + str(
-            input_speed_abs2)[-2:] + ' 00 00 00 F0'
+            input_speed_abs2)[-2:] + ' 00 00 ' + hex(t)[2:] + ' F0'
         hex_command1 = bytes.fromhex(input_speed_form)
 
     elif str1 < 0 and str2 >= 0:
         input_speed_abs1 = hex(32768 - abs(str1) + 32768)
         input_speed_2 = hex(str2)[2:].zfill(4)
-        input_speed_form = str3 + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[
+        # 校验位
+        lit = [0xAA, 0x07, 0x08, eval('0x' + str3), 0x00, eval('0x' + input_speed_abs1[-4:-2]), eval('0x' + str(input_speed_abs1)[
+                                                                                      -2:]),
+               eval('0x' + input_speed_2[0:2]),
+               eval('0x' + str(input_speed_2)[
+                      2:]), 0x00, 0x00]
+        t = None
+        for i in range(len(lit)):
+            if i:
+                t ^= lit[i]
+            else:
+                t = lit[i] ^ 0
+        input_speed_form = '55 AA 07 08 ' + str3 + ' 00 ' + input_speed_abs1[-4:-2] + ' ' + str(input_speed_abs1)[
                                                                                   -2:] + ' ' + input_speed_2[
                                                                                                0:2] + ' ' + str(
-            input_speed_2)[2:] + ' 00 00 00 F0'
+            input_speed_2)[2:] + ' 00 00 ' + hex(t)[2:] + ' F0'
         hex_command1 = bytes.fromhex(input_speed_form)
 
     return hex_command1, input_speed_form

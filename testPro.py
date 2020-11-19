@@ -14,9 +14,8 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QSlider, QMessageBox
 # from PyQt5.QtGui import *
 from PyQt5 import QtGui
 import function_file
-
 import numpy as np
-
+import image
 
 #解决打包时递归超过最大深度问题
 # sys.setrecursionlimit(100000)
@@ -36,6 +35,7 @@ https://zhuanlan.zhihu.com/p/100798858
 https://blog.csdn.net/weixin_40796925/article/details/107733966
 https://blog.csdn.net/qq_41590417/article/details/80477990
 https://blog.csdn.net/weixin_40796925/article/details/107730799  建立 PlotWidget 控件
+https://blog.csdn.net/qq_40529853/article/details/100576791 体积问题
 '''
 
 
@@ -48,7 +48,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         self.ser = serial.Serial()
         # self.port_check()
         # spin_icon = qtawesome.icon('fa.star', color='darkolivegreen')
-        spin_icon = QtGui.QIcon('./pic.png')
+        spin_icon = QtGui.QIcon(':/pic.png')
         self.setWindowIcon(spin_icon)
         # 刷新一下串口的列表
         self.refresh()
@@ -268,8 +268,9 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
 
                 input_speed_initial1 = round(float(self.data_edit1.text()) * 100)
                 input_speed_initial2 = round(float(self.data_edit2.text()) * 100)
+
                 hex_command1, input_speed_form = function_file.data_send_function(input_speed_initial1, input_speed_initial2,
-                                                                    '55 AA 07 08 03 00 ')
+                                                                    '03')
                 self.ser.write(hex_command1)
                 self.show_send.append(input_speed_form)
 
@@ -277,7 +278,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 input_speed_initial1 = round(float(self.data_edit1.text()) * 65536 / 360)
                 input_speed_initial2 = round(float(self.data_edit2.text()) * 65536 / 360)
                 hex_command1, input_speed_form = function_file.data_send_function(input_speed_initial1, input_speed_initial2,
-                                                                    '55 AA 07 08 0C 00 ')
+                                                                    '0C')
                 self.ser.write(hex_command1)
                 self.show_send.append(input_speed_form)
 
@@ -285,7 +286,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 input_speed_initial1 = round(float(self.data_edit1.text()) * 100)
                 input_speed_initial2 = round(float(self.data_edit2.text()) * 100)
                 hex_command1, input_speed_form = function_file.data_send_function(input_speed_initial1, input_speed_initial2,
-                                                                    '55 AA 07 08 60 00 ')
+                                                                    '60')
                 self.ser.write(hex_command1)
                 self.show_send.append(input_speed_form)
 
@@ -321,14 +322,49 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                     # print(dealStr)
                     dealStr += ' '
             print("处理后的数据 %s \n类型为: %s\n" % (dealStr, type(dealStr)))
-            print(len(dealStr))
-            print(type(len(dealStr)))
-            print(dealStr[:5])
-            print(dealStr[len(dealStr)-3:])
-            dd = dealStr[len(dealStr)-3:len(dealStr)-1]
-            print(type(dd))
+            print(dealStr[3:5])
+            print(dealStr[6:8])
+            print(dealStr[9:11])
+            print(dealStr[12:14])
+            # print(len(dealStr))
+            # print(type(len(dealStr)))
+            # print(dealStr[:5])
+            # print(dealStr[len(dealStr)-3:])
+            # dd = dealStr[len(dealStr)-3:len(dealStr)-1]
+            # print('12345678900')
+            # print(dd)
+            # print(type(dd))
 
-            if dealStr[:5] == '55 aa' and dealStr[len(dealStr)-3:len(dealStr)-1] == 'f0' and len(dealStr) == 66:
+            # 校验位
+            lit1 = [eval('0x' + dealStr[3:5]),
+                   eval('0x' + dealStr[6:8]),
+                   eval('0x' + dealStr[9:11]),
+                   eval('0x' + dealStr[12:14]),
+                   eval('0x' + dealStr[15:17]),
+                   eval('0x' + dealStr[18:20]),
+                   eval('0x' + dealStr[21:23]),
+                   eval('0x' + dealStr[24:26]),
+                   eval('0x' + dealStr[27:29]),
+                   eval('0x' + dealStr[30:32]),
+                   eval('0x' + dealStr[33:35]),
+                   eval('0x' + dealStr[36:38]),
+                   eval('0x' + dealStr[39:41]),
+                   eval('0x' + dealStr[42:44]),
+                   eval('0x' + dealStr[45:47]),
+                   eval('0x' + dealStr[48:50]),
+                   eval('0x' + dealStr[51:53]),
+                   eval('0x' + dealStr[54:56]),
+                   eval('0x' + dealStr[57:59])]
+            t = None
+            for i in range(len(lit1)):
+                if i:
+                    t ^= lit1[i]
+                else:
+                    t = lit1[i] ^ 0
+            print(dealStr[len(dealStr)-6:len(dealStr)-4])
+            print(hex(t))
+
+            if dealStr[:5] == '55 aa' and dealStr[len(dealStr)-3:len(dealStr)-1] == 'f0' and len(dealStr) == 66 and hex(t)[2:] == dealStr[len(dealStr)-6:len(dealStr)-4]:
                 dealStr_new = dealStr.replace(' ', '')  #去除首尾空格
                 print(dealStr_new)
                 print(type(dealStr_new))
