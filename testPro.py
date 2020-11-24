@@ -5,14 +5,14 @@
 import sys
 from Pro import Ui_MainWindow
 import serial
-# import qtawesome
+import qtawesome
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer
 # from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QMainWindow, QApplication, QSlider, QMessageBox
 # from PyQt5.QtWidgets import *
 # from PyQt5.QtGui import *
-from PyQt5 import QtGui
+# from PyQt5 import QtGui
 import function_file
 import numpy as np
 import image
@@ -44,11 +44,12 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         super(Pyqt5Serial, self).__init__()
         self.setupUi(self)
         self.init()
-        self.setWindowTitle("转台上位机_V2.0")
+        self.setWindowTitle("转台上位机_V2.2")
         self.ser = serial.Serial()
         # self.port_check()
         # spin_icon = qtawesome.icon('fa.star', color='darkolivegreen')
-        spin_icon = QtGui.QIcon(':/pic.png')
+        # spin_icon = QtGui.QIcon(':/pic.png')
+        spin_icon = qtawesome.icon('fa.star', color='darkolivegreen')
         self.setWindowIcon(spin_icon)
         # 刷新一下串口的列表
         self.refresh()
@@ -75,10 +76,36 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
         # 设置刻度间隔
         self.verticalSlider.setTickInterval(0.01)
 
+        # 校验位
+        lit_on = [0x07, 0x08, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+        lit_off = [0x07, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+        lit_lock = [0x07, 0x08, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+
+        t_on = None
+        for i in range(len(lit_on)):
+            if i:
+                t_on ^= lit_on[i]
+            else:
+                t_on = lit_on[i] ^ 0
+
+        t_off = None
+        for i in range(len(lit_off)):
+            if i:
+                t_off ^= lit_off[i]
+            else:
+                t_off = lit_off[i] ^ 0
+
+        t_lock = None
+        for i in range(len(lit_lock)):
+            if i:
+                t_lock ^= lit_lock[i]
+            else:
+                t_lock = lit_lock[i] ^ 0
+
         self.active_button = ''
-        self.POWER_ON = '55 AA 07 08 80 00 00 00 00 00 00 00 00 F0'
-        self.POWER_OFF = '55 AA 07 08 00 00 00 00 00 00 00 00 00 F0'
-        self.LOCK = '55 AA 07 08 10 00 00 00 00 00 00 00 00 F0'
+        self.POWER_ON = '55 AA 07 08 80 00 00 00 00 00 00 00 ' + hex(t_on)[2:].zfill(2) + ' F0'
+        self.POWER_OFF = '55 AA 07 08 00 00 00 00 00 00 00 00 ' + hex(t_off)[2:].zfill(2) + ' F0'
+        self.LOCK = '55 AA 07 08 10 00 00 00 00 00 00 00 ' + hex(t_lock)[2:].zfill(2) + ' F0'
         self.READ_DATA = '55 AA 07 08 00 FF 00 00 00 00 00 00 00 F0'
         # self.SERVO_OFF = '55 AA 07 08 01 01 00 00 00 00 00 00 00 00 F0'  伺服关闭
 
@@ -336,7 +363,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
             # print(type(dd))
 
             # 校验位
-            lit1 = [eval('0x' + dealStr[3:5]),
+            lit1 = [
                    eval('0x' + dealStr[6:8]),
                    eval('0x' + dealStr[9:11]),
                    eval('0x' + dealStr[12:14]),
@@ -355,16 +382,18 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                    eval('0x' + dealStr[51:53]),
                    eval('0x' + dealStr[54:56]),
                    eval('0x' + dealStr[57:59])]
-            t = None
+            t_12 = None
             for i in range(len(lit1)):
                 if i:
-                    t ^= lit1[i]
+                    t_12 ^= lit1[i]
                 else:
-                    t = lit1[i] ^ 0
+                    t_12 = lit1[i] ^ 0
             print(dealStr[len(dealStr)-6:len(dealStr)-4])
-            print(hex(t))
+            print(hex(t_12))
 
-            if dealStr[:5] == '55 aa' and dealStr[len(dealStr)-3:len(dealStr)-1] == 'f0' and len(dealStr) == 66 and hex(t)[2:] == dealStr[len(dealStr)-6:len(dealStr)-4]:
+            # if dealStr[:5] == '55 aa' and dealStr[len(dealStr)-3:len(dealStr)-1] == 'f0' and len(dealStr) == 66 and hex(t_12)[2:].zfill(2) == dealStr[len(dealStr)-6:len(dealStr)-4]:
+            if dealStr[:5] == '55 aa' and dealStr[len(dealStr) - 3:len(dealStr) - 1] == 'f0' and len(
+                    dealStr) == 66:
                 dealStr_new = dealStr.replace(' ', '')  #去除首尾空格
                 print(dealStr_new)
                 print(type(dealStr_new))
@@ -372,7 +401,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 print(recv1)
                 if recv1 == '03':
                     self.lineEdit_1.setText('速度运行模式')
-                elif recv1 == '0C':
+                elif recv1 == '0c':
                     self.lineEdit_1.setText('位置运行模式')
                 elif recv1 == '10':
                     self.lineEdit_1.setText('锁定')
@@ -387,9 +416,13 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 recv2 = str(dealStr_new[10:12])  # 转台到位状态
                 print(recv2)
                 if recv2 == '01':
-                    self.lineEdit_2.setText('俯仰到位')
+                    self.lineEdit_2.setText('俯仰到位, 方位未到位')
                 elif recv2 == '10':
-                    self.lineEdit_2.setText('方位到位')
+                    self.lineEdit_2.setText('俯仰未到位, 方位到位')
+                elif recv2 == '11':
+                    self.lineEdit_2.setText('俯仰、方位均到位')
+                elif recv2 == '00':
+                    self.lineEdit_2.setText('俯仰、方位均未到位')
                     print('11111111111111111111111')
                 else:
                     pass
@@ -428,6 +461,7 @@ class Pyqt5Serial(QMainWindow, Ui_MainWindow):
                 print(self.data1)
                 # 数据填充到绘制曲线中
                 self.curve1.setData(self.data1)
+                # self.curve1.setData(self.data3)
                 # x 轴记录点
                 self.ptr1 += 1
                 # 重新设定 x 相关的坐标原点
